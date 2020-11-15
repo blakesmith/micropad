@@ -19,7 +19,7 @@ U 1 1 5FADCB51
 P 5650 4050
 F 0 "U2" H 5200 5100 50  0000 C CNN
 F 1 "STM32F042K6Ux" H 5050 5000 50  0000 C CNN
-F 2 "Package_DFN_QFN:QFN-32-1EP_5x5mm_P0.5mm_EP3.45x3.45mm" H 5250 3150 50  0001 R CNN
+F 2 "Housings_DFN_QFN:WQFN-32-1EP_5x5mm_Pitch0.5mm" H 5250 3150 50  0001 R CNN
 F 3 "http://www.st.com/st-web-ui/static/active/en/resource/technical/document/datasheet/DM00105814.pdf" H 5650 4050 50  0001 C CNN
 	1    5650 4050
 	1    0    0    -1  
@@ -66,7 +66,7 @@ U 1 1 5FAE4B66
 P 2000 2200
 F 0 "U1" H 2000 2442 50  0000 C CNN
 F 1 "LD1117S33TR_SOT223" H 2000 2351 50  0000 C CNN
-F 2 "Package_TO_SOT_SMD:SOT-223-3_TabPin2" H 2000 2400 50  0001 C CNN
+F 2 "TO_SOT_Packages_SMD:SOT-223-3_TabPin2" H 2000 2400 50  0001 C CNN
 F 3 "http://www.st.com/st-web-ui/static/active/en/resource/technical/document/datasheet/CD00000544.pdf" H 2100 1950 50  0001 C CNN
 	1    2000 2200
 	1    0    0    -1  
@@ -675,7 +675,7 @@ L Device:R_Small R1
 U 1 1 5FC13A6F
 P 4650 4000
 F 0 "R1" H 4709 4046 50  0000 L CNN
-F 1 "R_Small" H 4709 3955 50  0000 L CNN
+F 1 "10k" H 4709 3955 50  0000 L CNN
 F 2 "Resistors_SMD:R_0805" H 4650 4000 50  0001 C CNN
 F 3 "~" H 4650 4000 50  0001 C CNN
 	1    4650 4000
