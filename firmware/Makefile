@@ -1,4 +1,9 @@
-all: micropad_debug.hex
+all: micropad_release.hex
+
+setup:
+	cargo install cargo-binutils
+	rustup target add thumbv6m-none-eabi
+	rustup component add llvm-tools-preview
 
 target/thumbv6m-none-eabi/debug/micropad:
 	cargo build
@@ -16,4 +21,4 @@ micropad_release.hex: target/thumbv6m-none-eabi/release/micropad
 clean:
 	rm -rf *.hex
 
-.PHONY: clean
+.PHONY: clean setup
