@@ -10,7 +10,7 @@ edition = "2018"
 cortex-m = "0.6.0"
 cortex-m-rt = "0.6.8"
 panic-halt = "0.2"
-stm32f0xx-hal = {version = "0.17", features = ["stm32f042", "stm32-usbd"]}
+stm32f0xx-hal = {version = "0.17", features = ["stm32f042", "stm32-usbd", "rt"]}
 usb-device = "0.2.7"
 smart-leds = "0.3"
 smart-leds-trait = "0.2"
