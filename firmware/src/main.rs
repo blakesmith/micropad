@@ -40,12 +40,33 @@ fn main() -> ! {
         .freeze(&mut peripherals.FLASH);
 
     let gpioa = peripherals.GPIOA.split(&mut rcc);
-    let (mut ok_led, play_pause, usb_dm, usb_dp) = disable_interrupts(move |cs| {
+    let (
+        mut ok_led,
+        play_pause,
+        _next,
+        _prev,
+        _enc_btn,
+        _enc_a,
+        _enc_b,
+        sck,
+        miso,
+        mosi,
+        usb_dm,
+        usb_dp,
+    ) = disable_interrupts(move |cs| {
         (
-            gpioa.pa6.into_push_pull_output(cs),
-            gpioa.pa3.into_pull_down_input(cs),
-            gpioa.pa11,
-            gpioa.pa12,
+            gpioa.pa10.into_push_pull_output(cs), // LED usr
+            gpioa.pa0.into_pull_down_input(cs),   // Play pause button
+            gpioa.pa1.into_pull_down_input(cs),   // Next button
+            gpioa.pa2.into_pull_down_input(cs),   // Prev button
+            gpioa.pa3.into_pull_up_input(cs),     // Encoder button
+            gpioa.pa8.into_pull_up_input(cs),     // Encoder A
+            gpioa.pa9.into_pull_up_input(cs),     // Encoder B
+            gpioa.pa5.into_alternate_af0(cs),
+            gpioa.pa6.into_alternate_af0(cs),
+            gpioa.pa7.into_alternate_af0(cs),
+            gpioa.pa11, // USB dm
+            gpioa.pa12, // USB dp
         )
     });
     let usb = hal::usb::Peripheral {
