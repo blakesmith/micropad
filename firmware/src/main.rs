@@ -1,7 +1,7 @@
 #![no_main]
 #![no_std]
 
-mod hid;
+pub mod hid;
 
 use panic_halt as _;
 
