@@ -13,7 +13,7 @@ use stm32f0xx_hal as hal;
 
 use hal::{
     gpio::{
-        gpioa::{PA0, PA5, PA6, PA7},
+        gpioa::{PA0, PA1, PA2, PA5, PA6, PA7},
         Alternate, Input, PullDown, AF0,
     },
     pac,
@@ -37,6 +37,8 @@ static mut USB_KEYBOARD: Option<KeyboardHidClass<UsbBus<hal::usb::Peripheral>>> 
 
 struct Devices {
     play_pause: PA0<Input<PullDown>>,
+    next: PA1<Input<PullDown>>,
+    prev: PA2<Input<PullDown>>,
     apa102: Apa102<
         spi::Spi<
             hal::stm32::SPI1,
@@ -64,8 +66,8 @@ fn setup() -> Devices {
         let gpioa = peripherals.GPIOA.split(&mut rcc);
         let (
             play_pause,
-            _next,
-            _prev,
+            next,
+            prev,
             _enc_btn,
             _enc_a,
             _enc_b,
@@ -124,7 +126,12 @@ fn setup() -> Devices {
         }
 
         ok_led.set_high().ok();
-        Devices { play_pause, apa102 }
+        Devices {
+            play_pause,
+            next,
+            prev,
+            apa102,
+        }
     })
 }
 
@@ -134,6 +141,8 @@ fn main() -> ! {
 
     let led_color_reset: [RGB8; 2] = [RGB8 { r: 0, g: 0, b: 0 }, RGB8 { r: 0, g: 0, b: 0 }];
     let led_color_play_pause: [RGB8; 2] = [RGB8 { r: 0, g: 64, b: 0 }, RGB8 { r: 64, g: 0, b: 0 }];
+    let led_color_next: [RGB8; 2] = [RGB8 { r: 0, g: 0, b: 64 }, RGB8 { r: 0, g: 64, b: 0 }];
+    let led_color_prev: [RGB8; 2] = [RGB8 { r: 64, g: 0, b: 0 }, RGB8 { r: 0, g: 0, b: 64 }];
 
     devices
         .apa102
@@ -149,6 +158,18 @@ fn main() -> ! {
                         .write(gamma(led_color_play_pause.iter().cloned()))
                         .unwrap();
                     keyboard.add_key(Key::Media(MediaCode::PlayPause));
+                } else if devices.next.is_high().unwrap() {
+                    devices
+                        .apa102
+                        .write(gamma(led_color_next.iter().cloned()))
+                        .unwrap();
+                    keyboard.add_key(Key::Media(MediaCode::ScanNext));
+                } else if devices.prev.is_high().unwrap() {
+                    devices
+                        .apa102
+                        .write(gamma(led_color_prev.iter().cloned()))
+                        .unwrap();
+                    keyboard.add_key(Key::Media(MediaCode::ScanPrev));
                 } else {
                     keyboard.reset_report();
                 }
