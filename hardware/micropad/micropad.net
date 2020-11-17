@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source /home/blake/projects/micropad/hardware/micropad/micropad.sch)
-    (date "Mon 16 Nov 2020 10:17:17 PM CST")
+    (date "Tue 17 Nov 2020 08:07:50 AM CST")
     (tool "Eeschema 5.1.7-a382d34a8~87~ubuntu20.04.1")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
@@ -17,7 +17,7 @@
   (components
     (comp (ref U2)
       (value STM32F042K6Ux)
-      (footprint Housings_DFN_QFN:WQFN-32-1EP_5x5mm_Pitch0.5mm)
+      (footprint Housings_DFN_QFN:QFN-32-1EP_5x5mm_Pitch0.5mm)
       (datasheet http://www.st.com/st-web-ui/static/active/en/resource/technical/document/datasheet/DM00105814.pdf)
       (libsource (lib MCU_ST_STM32F0) (part STM32F042K6Ux) (description "ARM Cortex-M0 MCU, 32KB flash, 6KB RAM, 48MHz, 2-3.6V, 28 GPIO, UFQFPN-32"))
       (sheetpath (names /) (tstamps /))

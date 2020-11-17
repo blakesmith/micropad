@@ -19,7 +19,7 @@ U 1 1 5FADCB51
 P 5650 4050
 F 0 "U2" H 5200 5100 50  0000 C CNN
 F 1 "STM32F042K6Ux" H 5050 5000 50  0000 C CNN
-F 2 "Housings_DFN_QFN:WQFN-32-1EP_5x5mm_Pitch0.5mm" H 5250 3150 50  0001 R CNN
+F 2 "Housings_DFN_QFN:QFN-32-1EP_5x5mm_Pitch0.5mm" H 5250 3150 50  0001 R CNN
 F 3 "http://www.st.com/st-web-ui/static/active/en/resource/technical/document/datasheet/DM00105814.pdf" H 5650 4050 50  0001 C CNN
 	1    5650 4050
 	1    0    0    -1  
