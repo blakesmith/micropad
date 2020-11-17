@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source /home/blake/projects/micropad/hardware/micropad/micropad.sch)
-    (date "Sun 15 Nov 2020 11:28:40 PM CST")
+    (date "Mon 16 Nov 2020 10:17:17 PM CST")
     (tool "Eeschema 5.1.7-a382d34a8~87~ubuntu20.04.1")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
