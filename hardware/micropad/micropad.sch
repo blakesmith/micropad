@@ -745,4 +745,48 @@ Wire Wire Line
 Text Label 6300 4050 0    50   ~ 0
 APA_MOSI
 NoConn ~ 6150 3950
+$Comp
+L Mechanical:MountingHole H1
+U 1 1 5FB65D0A
+P 2400 5050
+F 0 "H1" H 2500 5096 50  0000 L CNN
+F 1 "MountingHole" H 2500 5005 50  0000 L CNN
+F 2 "Mounting_Holes:MountingHole_2.2mm_M2" H 2400 5050 50  0001 C CNN
+F 3 "~" H 2400 5050 50  0001 C CNN
+	1    2400 5050
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H2
+U 1 1 5FB66F3B
+P 2400 5300
+F 0 "H2" H 2500 5346 50  0000 L CNN
+F 1 "MountingHole" H 2500 5255 50  0000 L CNN
+F 2 "Mounting_Holes:MountingHole_2.2mm_M2" H 2400 5300 50  0001 C CNN
+F 3 "~" H 2400 5300 50  0001 C CNN
+	1    2400 5300
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H3
+U 1 1 5FB67520
+P 2400 5550
+F 0 "H3" H 2500 5596 50  0000 L CNN
+F 1 "MountingHole" H 2500 5505 50  0000 L CNN
+F 2 "Mounting_Holes:MountingHole_2.2mm_M2" H 2400 5550 50  0001 C CNN
+F 3 "~" H 2400 5550 50  0001 C CNN
+	1    2400 5550
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H4
+U 1 1 5FB67D38
+P 2400 5800
+F 0 "H4" H 2500 5846 50  0000 L CNN
+F 1 "MountingHole" H 2500 5755 50  0000 L CNN
+F 2 "Mounting_Holes:MountingHole_2.2mm_M2" H 2400 5800 50  0001 C CNN
+F 3 "~" H 2400 5800 50  0001 C CNN
+	1    2400 5800
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
