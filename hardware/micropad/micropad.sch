@@ -66,7 +66,7 @@ U 1 1 5FAE4B66
 P 2000 2200
 F 0 "U1" H 2000 2442 50  0000 C CNN
 F 1 "LD1117S33TR_SOT223" H 2000 2351 50  0000 C CNN
-F 2 "TO_SOT_Packages_SMD:SOT-223-3_TabPin2" H 2000 2400 50  0001 C CNN
+F 2 "TO_SOT_Packages_SMD:SOT-223" H 2000 2400 50  0001 C CNN
 F 3 "http://www.st.com/st-web-ui/static/active/en/resource/technical/document/datasheet/CD00000544.pdf" H 2100 1950 50  0001 C CNN
 	1    2000 2200
 	1    0    0    -1  

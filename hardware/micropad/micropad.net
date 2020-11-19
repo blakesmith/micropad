@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source /home/blake/projects/micropad/hardware/micropad/micropad.sch)
-    (date "Tue 17 Nov 2020 08:14:24 AM CST")
+    (date "Wed 18 Nov 2020 09:58:52 PM CST")
     (tool "Eeschema 5.1.7-a382d34a8~87~ubuntu20.04.1")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
@@ -24,7 +24,7 @@
       (tstamp 5FADCB51))
     (comp (ref U1)
       (value LD1117S33TR_SOT223)
-      (footprint TO_SOT_Packages_SMD:SOT-223-3_TabPin2)
+      (footprint TO_SOT_Packages_SMD:SOT-223)
       (datasheet http://www.st.com/st-web-ui/static/active/en/resource/technical/document/datasheet/CD00000544.pdf)
       (libsource (lib Regulator_Linear) (part LD1117S33TR_SOT223) (description "800mA Fixed Low Drop Positive Voltage Regulator, Fixed Output 3.3V, SOT-223"))
       (sheetpath (names /) (tstamps /))
