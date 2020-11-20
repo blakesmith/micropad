@@ -35,23 +35,25 @@ static ENCODER_ACTIONS: &'static [RotationAction] = &[
     RotationAction::None,
 ];
 
-pub struct RotaryEncoder<P>
+pub struct RotaryEncoder<CwPin, CcwPin>
 where
-    P: InputPin,
+    CwPin: InputPin,
+    CcwPin: InputPin,
 {
     /// The current state of the encoder table
     rotation_state: u8,
     /// The rotation count of the encoder
     count: i32,
-    clockwise_pin: P,
-    counter_clockwise_pin: P,
+    clockwise_pin: CwPin,
+    counter_clockwise_pin: CcwPin,
 }
 
-impl<P> RotaryEncoder<P>
+impl<CwPin, CcwPin> RotaryEncoder<CwPin, CcwPin>
 where
-    P: InputPin,
+    CwPin: InputPin,
+    CcwPin: InputPin,
 {
-    pub fn new(clockwise_pin: P, counter_clockwise_pin: P) -> Self {
+    pub fn new(clockwise_pin: CwPin, counter_clockwise_pin: CcwPin) -> Self {
         Self {
             rotation_state: 0,
             count: 0,
@@ -60,21 +62,21 @@ where
         }
     }
 
-    pub fn read_count(&mut self) -> Result<i32, P::Error> {
-        self.count += match self.rotation_action()? {
+    pub fn read_count(&mut self) -> i32 {
+        self.count += match self.rotation_action() {
             RotationAction::None => 0,
             RotationAction::Clockwise => 1,
-            RotationAction::CounterClockwise => 2,
+            RotationAction::CounterClockwise => -1,
         };
-        Ok(self.count)
+        self.count
     }
 
-    fn rotation_action(&mut self) -> Result<RotationAction, P::Error> {
-        let cw_pin = self.clockwise_pin.is_high()? as u8;
-        let ccw_pin = self.counter_clockwise_pin.is_high()? as u8;
+    fn rotation_action(&mut self) -> RotationAction {
+        let cw_pin = self.clockwise_pin.is_high().map_or(0, |b| b as u8);
+        let ccw_pin = self.counter_clockwise_pin.is_high().map_or(0, |b| b as u8);
         self.rotation_state <<= 2; // Retain the previous pin state as the upper two bits
         self.rotation_state |= ((cw_pin << 1) | ccw_pin) & 0x03; // Shift the current state onte the lower 2 bits
         let lookup_index = self.rotation_state & 0x0F; // Only keep the bottom 4 bits, throw away the upper 4, and lookup in our rotation table
-        Ok(ENCODER_ACTIONS[lookup_index as usize])
+        ENCODER_ACTIONS[lookup_index as usize]
     }
 }

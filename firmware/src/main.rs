@@ -5,6 +5,7 @@ pub mod encoder;
 pub mod hid;
 
 use apa102_spi::{Apa102, PixelOrder};
+use encoder::RotaryEncoder;
 use smart_leds::{gamma, SmartLedsWrite};
 use smart_leds_trait::RGB8;
 
@@ -14,8 +15,8 @@ use stm32f0xx_hal as hal;
 
 use hal::{
     gpio::{
-        gpioa::{PA0, PA1, PA2, PA5, PA6, PA7},
-        Alternate, Input, PullDown, AF0,
+        gpioa::{PA0, PA1, PA2, PA5, PA6, PA7, PA8, PA9},
+        Alternate, Floating, Input, PullDown, AF0,
     },
     pac,
     pac::{interrupt, Interrupt},
@@ -49,6 +50,7 @@ struct Devices {
             spi::EightBit,
         >,
     >,
+    encoder: RotaryEncoder<PA8<Input<Floating>>, PA9<Input<Floating>>>,
 }
 
 fn setup() -> Devices {
@@ -70,8 +72,8 @@ fn setup() -> Devices {
             next,
             prev,
             _enc_btn,
-            _enc_a,
-            _enc_b,
+            enc_cw,
+            enc_ccw,
             mut ok_led,
             sck,
             miso,
@@ -83,14 +85,14 @@ fn setup() -> Devices {
             gpioa.pa1.into_pull_down_input(cs),   // Next button
             gpioa.pa2.into_pull_down_input(cs),   // Prev button
             gpioa.pa3.into_pull_up_input(cs),     // Encoder button
-            gpioa.pa8.into_pull_up_input(cs),     // Encoder A
-            gpioa.pa9.into_pull_up_input(cs),     // Encoder B
+            gpioa.pa8.into_floating_input(cs), // Encoder A, has a 10k pull up resistor on the board
+            gpioa.pa9.into_floating_input(cs), // Encoder B, has a 10k pull up resistor on the board
             gpioa.pa10.into_push_pull_output(cs), // LED usr
-            gpioa.pa5.into_alternate_af0(cs),     // APA102 SPI SCK
-            gpioa.pa6.into_alternate_af0(cs),     // APA102 SPI MISO
-            gpioa.pa7.into_alternate_af0(cs),     // APA102 SPI MOSI
-            gpioa.pa11,                           // USB dm
-            gpioa.pa12,                           // USB dp
+            gpioa.pa5.into_alternate_af0(cs),  // APA102 SPI SCK
+            gpioa.pa6.into_alternate_af0(cs),  // APA102 SPI MISO
+            gpioa.pa7.into_alternate_af0(cs),  // APA102 SPI MOSI
+            gpioa.pa11,                        // USB dm
+            gpioa.pa12,                        // USB dp
         );
         let spi = spi::Spi::spi1(
             peripherals.SPI1,
@@ -103,6 +105,7 @@ fn setup() -> Devices {
             &mut rcc,
         );
         let apa102 = Apa102::new_with_options(spi, 4, true, PixelOrder::RBG);
+        let encoder = RotaryEncoder::new(enc_cw, enc_ccw);
         let usb = hal::usb::Peripheral {
             usb: peripherals.USB,
             pin_dm: usb_dm,
@@ -132,6 +135,7 @@ fn setup() -> Devices {
             next,
             prev,
             apa102,
+            encoder,
         }
     })
 }
@@ -150,9 +154,25 @@ fn main() -> ! {
         .write(led_color_reset.iter().cloned())
         .unwrap();
 
+    let mut current_encoder_count = 0;
+
     loop {
+        // Sample encoder
+        let encoder_sample = devices.encoder.read_count();
+        let encoder_diff = encoder_sample - current_encoder_count;
+        current_encoder_count = encoder_sample;
+
         disable_interrupts(|_| unsafe {
             USB_KEYBOARD.as_mut().map(|keyboard| {
+                // Encoder volume controls
+                for _ in 0..encoder_diff.abs() {
+                    if encoder_diff > 0 {
+                        keyboard.add_key(Key::Media(MediaCode::VolumeUp));
+                    } else {
+                        keyboard.add_key(Key::Media(MediaCode::VolumeDown));
+                    }
+                }
+                // Buttons
                 if devices.play_pause.is_high().unwrap() {
                     devices
                         .apa102
