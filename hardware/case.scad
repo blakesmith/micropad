@@ -1,0 +1,199 @@
+$fn = 100;
+
+total_1u_count = 2;
+row_count = 2;
+
+switch_cutout_1u_width = 14.0;
+switch_cutout_1u_length = 14.0;
+switch_cutout_1u_padding = 5.00;
+switch_cutout_1u_pitch = switch_cutout_1u_width + switch_cutout_1u_padding;
+
+top_plate_padding_top_bottom = 0;
+top_plate_padding_left_right = 0;
+top_plate_height = 1.6;
+top_plate_width = (row_count * switch_cutout_1u_pitch) + top_plate_padding_top_bottom;
+top_plate_length = (total_1u_count * switch_cutout_1u_pitch) + top_plate_padding_left_right;
+
+cherry_top_height = 3.6;
+cherry_middle_height = 6.6;
+cherry_bottom_width = 15.6;
+cherry_bottom_length = 15.6;
+
+dsa_keycap_bottom_width = 18.415;
+dsa_keycap_bottom_length = 18.415;
+dsa_keycap_top_length = 12.7;
+dsa_keycap_top_width = 12.7;
+dsa_keycap_height = 7.39;
+
+MUTE_PALLETTE = [
+    [39, 86, 123],
+    [182, 59, 59],
+    [249, 196, 20]
+];
+
+KEYCAP_PALLETTE = MUTE_PALLETTE;
+
+C1 = [KEYCAP_PALLETTE[0][0] / 255, KEYCAP_PALLETTE[0][1] / 255, KEYCAP_PALLETTE[0][2] / 255];
+C2 = [KEYCAP_PALLETTE[1][0] / 255, KEYCAP_PALLETTE[1][1] / 255, KEYCAP_PALLETTE[1][2] / 255];
+C3 = [KEYCAP_PALLETTE[2][0] / 255, KEYCAP_PALLETTE[2][1] / 255, KEYCAP_PALLETTE[2][2] / 255];
+
+KEYCAP_COLORS = [
+    [C1, C1],
+    [C1, C1],
+];
+
+union() {
+    top_plate();
+}
+
+module top_plate() {
+    difference() {
+        plate();
+        union() {
+            row_0_switch_cutout();
+            row_1_switch_cutout();
+//            mounting_holes();
+        }
+    }
+}
+
+module row_0_switch_cutout() {
+    row_switch_cutout(row=0, switch_offset=0.5, switch_size=2, cutout_count=1);
+}
+
+module row_1_switch_cutout() {
+    row_switch_cutout(row=1, switch_offset=0, cutout_count=total_1u_count);
+}
+
+module row_switch_cutout(row, switch_offset, cutout_count, switch_size=1, add_small_stabilizer=false) {
+    start_x_offset = -(top_plate_length / 2) + (switch_cutout_1u_pitch / 2) + (top_plate_padding_left_right / 2) + (switch_cutout_1u_pitch * switch_offset);
+    start_y_offset = (top_plate_width / 2) - (switch_cutout_1u_pitch * (row + 1)) + (switch_cutout_1u_pitch / 2) - (top_plate_padding_top_bottom / 2);
+
+    for (i = [0:cutout_count - 1]) {
+        x_offset = start_x_offset + (i * switch_cutout_1u_pitch);
+        y_offset = start_y_offset;
+
+        cherry_mx_cutout(x_offset,
+                         y_offset,
+                         switch_cutout_1u_width,
+                         switch_cutout_1u_length,
+                         add_small_stabilizer);
+        %dsa_keycap(x_offset, y_offset, KEYCAP_COLORS[row][i + floor(switch_offset)], switch_size);
+        %cherry_mx_switch(x_offset, y_offset);
+    }
+}
+
+module plate() {
+    module rounded_corners() {
+        corner_radius = 3;
+        translate([-(top_plate_length / 2), (top_plate_width / 2)])
+            circle(r=corner_radius);
+        translate([-(top_plate_length / 2), -(top_plate_width / 2)])
+            circle(r=corner_radius);
+        translate([(top_plate_length / 2), (top_plate_width / 2)])
+            circle(r=corner_radius);
+        translate([(top_plate_length / 2), -(top_plate_width / 2)])
+            circle(r=corner_radius);
+    }
+    
+    color("gray", 1.0)
+        hull() {
+        square([top_plate_length,
+                top_plate_width],
+               center = true);
+        rounded_corners();
+    }
+}
+
+module cherry_mx_cutout(x, y, switch_cutout_width, switch_cutout_length, add_small_stabilizer=false) {
+    module rounded_corners() {
+        corner_radius = 0.3;
+        translate([x + (switch_cutout_length / 2), y + (switch_cutout_width / 2)])
+            circle(r = corner_radius);
+        translate([x + (switch_cutout_length / 2), y - (switch_cutout_width / 2)])
+            circle(r = corner_radius);
+        translate([x - (switch_cutout_length / 2), y + (switch_cutout_width / 2)])
+            circle(r = corner_radius);
+        translate([x - (switch_cutout_length / 2), y - (switch_cutout_width / 2)])
+            circle(r = corner_radius);
+    }
+
+    hull() {
+        translate([x, y])
+            square([switch_cutout_length,
+                    switch_cutout_width],
+                center=true);
+        rounded_corners();
+    }
+
+    if (add_small_stabilizer) {
+        small_stabilizer(x - switch_cutout_length, y, false);
+        small_stabilizer(x + switch_cutout_length, y, true);
+    }
+}
+
+module cherry_mx_switch(x, y) {
+    offset_z = cherry_middle_height / 2;
+    translate([x, y, offset_z]) {
+        color("black", 1.0)
+        linear_extrude(height = cherry_middle_height,
+                       center = true,
+                       scale = 0.69)
+            square([cherry_bottom_width,
+                    cherry_bottom_length],
+                   center=true);
+    }
+}
+
+module dsa_keycap(x, y, cap_color, switch_size) {
+    offset_z = (dsa_keycap_height / 2) + cherry_middle_height - cherry_top_height;
+    translate([x, y, offset_z]) {
+        color(cap_color, 1.0)
+            linear_extrude(height = dsa_keycap_height, center = true, scale = 0.69)
+            square([dsa_keycap_bottom_width * switch_size,
+                    dsa_keycap_bottom_length],
+                   center=true);
+    }
+}
+
+
+module small_stabilizer(x, y, right=false) {
+    stabilizer_length = 6.65 + 0.1;
+    stabilizer_width = 13.46 + 0.15;
+
+    bottom_square_length = 3.04 + 0.1;
+    bottom_square_width = 1.16 + 0.254;
+
+    left_square_length = 0.762;
+    left_square_width = 2.79 + 0.2;
+    left_square_width_offset = 0.5;
+
+    right_square_length = switch_cutout_1u_length - (stabilizer_length);
+    right_square_width = stabilizer_width - (2 * (0.81 + 0.1));
+
+    translate([x, y]) {
+        mirror([right ? 1 : 0, 0, 0]) {
+            union() {
+                square([stabilizer_length,
+                        stabilizer_width],
+                       center=true);
+                translate([0, -(stabilizer_width / 2) - (bottom_square_width / 2) + 0.01]) {
+                    square([bottom_square_length,
+                            bottom_square_width],
+                           center=true);
+                }
+                translate([-(stabilizer_length / 2) - (left_square_length / 2) + 0.01, (left_square_width / 2) - left_square_width_offset]) {
+                    square([left_square_length,
+                            left_square_width],
+                           center=true);
+                }
+                translate([(stabilizer_length / 2) + (right_square_length / 2) - 0.01, 0]) {
+                    square([right_square_length,
+                            right_square_width],
+                           center=true);
+                }
+            }
+        }
+    }
+}
+
