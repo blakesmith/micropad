@@ -1,6 +1,7 @@
 #![no_main]
 #![no_std]
 
+pub mod encoder;
 pub mod hid;
 
 use apa102_spi::{Apa102, PixelOrder};

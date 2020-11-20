@@ -138,6 +138,7 @@ dependencies = [
  "apa102-spi",
  "cortex-m",
  "cortex-m-rt",
+ "embedded-hal",
  "panic-halt",
  "smart-leds",
  "smart-leds-trait",
