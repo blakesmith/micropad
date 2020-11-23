@@ -11,8 +11,10 @@ switch_cutout_1u_pitch = switch_cutout_1u_width + switch_cutout_1u_padding;
 top_plate_padding_top_bottom = 0;
 top_plate_padding_left_right = 0;
 top_plate_height = 1.6;
-top_plate_width = (row_count * switch_cutout_1u_pitch) + top_plate_padding_top_bottom;
+top_plate_width = ((row_count * switch_cutout_1u_pitch) + top_plate_padding_top_bottom) * 1.7;
 top_plate_length = (total_1u_count * switch_cutout_1u_pitch) + top_plate_padding_left_right;
+
+echo("Top plate dimensions are w=", top_plate_width, ",l=", top_plate_length);
 
 cherry_top_height = 3.6;
 cherry_middle_height = 6.6;
