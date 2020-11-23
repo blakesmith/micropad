@@ -11,8 +11,8 @@ switch_cutout_1u_pitch = switch_cutout_1u_width + switch_cutout_1u_padding;
 top_plate_padding_top_bottom = 0;
 top_plate_padding_left_right = 0;
 top_plate_height = 1.6;
-top_plate_width = ((row_count * switch_cutout_1u_pitch) + top_plate_padding_top_bottom) * 2.0;
-top_plate_length = (total_1u_count * switch_cutout_1u_pitch) + top_plate_padding_left_right;
+top_plate_width = ((row_count * switch_cutout_1u_pitch) + top_plate_padding_top_bottom) * 1.854;
+top_plate_length = ((total_1u_count * switch_cutout_1u_pitch) + top_plate_padding_left_right) * 1.03;
 
 echo("Top plate dimensions are w=", top_plate_width, ",l=", top_plate_length);
 
@@ -46,11 +46,13 @@ KEYCAP_COLORS = [
 
 union() {
     top_plate();
+//    plate(top_plate_length, top_plate_width);
 }
 
 module top_plate() {
+
     difference() {
-        plate();
+        plate(top_plate_length, top_plate_width);
         union() {
             row_0_switch_cutout();
             row_1_switch_cutout();
@@ -85,23 +87,23 @@ module row_switch_cutout(row, switch_offset, cutout_count, switch_size=1, add_sm
     }
 }
 
-module plate() {
+module plate(length, width) {
     module rounded_corners() {
         corner_radius = 3;
-        translate([-(top_plate_length / 2), (top_plate_width / 2)])
+        translate([-(length / 2), (width / 2)])
             circle(r=corner_radius);
-        translate([-(top_plate_length / 2), -(top_plate_width / 2)])
+        translate([-(length / 2), -(width / 2)])
             circle(r=corner_radius);
-        translate([(top_plate_length / 2), (top_plate_width / 2)])
+        translate([(length / 2), (width / 2)])
             circle(r=corner_radius);
-        translate([(top_plate_length / 2), -(top_plate_width / 2)])
+        translate([(length / 2), -(width / 2)])
             circle(r=corner_radius);
     }
     
     color("gray", 1.0)
         hull() {
-        square([top_plate_length,
-                top_plate_width],
+        square([length,
+                width],
                center = true);
         rounded_corners();
     }
