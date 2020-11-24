@@ -71,12 +71,18 @@ module top_plate() {
 
 module encoder_cutout() {
     translate([0, -(top_plate_width / 2 / 2)])
+        hull() {
         square([encoder_length, encoder_width], center=true);
+        rounded_corners(encoder_length, encoder_width, 1);
+    }
 }
 
 module apa102_cutout() {
     translate([0, -(top_plate_width / 2 / 2 / 2)])
+        hull() {
         square([apa102_length, apa102_width], center=true);
+        rounded_corners(apa102_length, apa102_width, 1);
+    }
 }
 
 module row_0_switch_cutout() {
@@ -105,25 +111,24 @@ module row_switch_cutout(row, switch_offset, cutout_count, switch_size=1, add_sm
     }
 }
 
+module rounded_corners(length, width, corner_radius) {
+    translate([-(length / 2), (width / 2)])
+        circle(r=corner_radius);
+    translate([-(length / 2), -(width / 2)])
+        circle(r=corner_radius);
+    translate([(length / 2), (width / 2)])
+        circle(r=corner_radius);
+    translate([(length / 2), -(width / 2)])
+        circle(r=corner_radius);
+}
+
 module plate(length, width) {
-    module rounded_corners() {
-        corner_radius = 3;
-        translate([-(length / 2), (width / 2)])
-            circle(r=corner_radius);
-        translate([-(length / 2), -(width / 2)])
-            circle(r=corner_radius);
-        translate([(length / 2), (width / 2)])
-            circle(r=corner_radius);
-        translate([(length / 2), -(width / 2)])
-            circle(r=corner_radius);
-    }
-    
     color("gray", 1.0)
         hull() {
         square([length,
                 width],
                center = true);
-        rounded_corners();
+        rounded_corners(length, width, 3);
     }
 }
 
