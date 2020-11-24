@@ -10,7 +10,7 @@ switch_cutout_1u_pitch = switch_cutout_1u_width + switch_cutout_1u_padding;
 
 top_plate_padding_top_bottom = 0;
 top_plate_padding_left_right = 0;
-top_plate_height = 1.6;
+top_plate_height = 3.175;
 top_plate_width = ((row_count * switch_cutout_1u_pitch) + top_plate_padding_top_bottom) * 1.854;
 top_plate_length = ((total_1u_count * switch_cutout_1u_pitch) + top_plate_padding_left_right) * 1.03;
 
@@ -38,6 +38,25 @@ usb_length = 8;
 
 mounting_hole_radius = 1.1 + 0.4;
 
+pcb_width = 76.4;
+pcb_length = 45.13;
+pcb_height = 1.6;
+
+standoff_radius = 2;
+standoff_height = 10;
+
+case_wall_thickness = 3;
+case_length = pcb_length;
+case_width = pcb_width;
+
+case_height = standoff_height + pcb_height + top_plate_height + case_wall_thickness;
+
+echo("Case height is: ", case_height);
+
+standoff_offset_z = (case_height / 2) - (standoff_height / 2) - (case_wall_thickness / 2);
+top_plate_offset_z = (case_height / 2) - top_plate_height;
+pcb_offset_z = top_plate_offset_z - pcb_height;
+
 MUTE_PALLETTE = [
     [39, 86, 123],
     [182, 59, 59],
@@ -56,23 +75,65 @@ KEYCAP_COLORS = [
 ];
 
 union() {
-    top_plate();
+    pcb();
+    top_plate(top_plate_height);
+    case();
 //    plate(top_plate_length, top_plate_width);
 }
 
-module top_plate() {
-
-    difference() {
-        plate(top_plate_length, top_plate_width);
-        union() {
-            row_0_switch_cutout();
-            row_1_switch_cutout();
-            encoder_cutout();
-            apa102_cutout();
-            usb_cutout();
-            mounting_holes();
+module pcb() {
+    color("green") {
+        translate([0, 0, pcb_offset_z]) {
+            linear_extrude(height=pcb_height) {
+                difference() {
+                    plate(top_plate_length, top_plate_width);
+                    mounting_holes();
+                }
+            }
         }
     }
+}
+
+module top_plate(height=0) {
+    translate([0, 0, top_plate_offset_z]) {
+        linear_extrude(height=height) {
+            difference() {
+                plate(top_plate_length, top_plate_width);
+                union() {
+                    row_0_switch_cutout();
+                    row_1_switch_cutout();
+                    encoder_cutout();
+                    apa102_cutout();
+                    usb_cutout();
+                    mounting_holes();
+                }
+            }
+        }
+    }
+}
+
+module case() {
+    module main_cutout() {
+        translate([0, 0, case_wall_thickness]) {
+            hull() {
+                cube([case_length - case_wall_thickness,
+                      case_width - case_wall_thickness,
+                      case_height - case_wall_thickness], center=true);
+                3d_rounded_corners(length=case_length - case_wall_thickness,
+                                   width=case_width - case_wall_thickness,
+                                   height=case_height - case_wall_thickness, corner_radius=2);
+            }
+        }
+    }
+
+    %difference() {
+        hull() {
+            cube([case_length, case_width, case_height], center=true);
+            3d_rounded_corners(length=case_length, width=case_width, height=case_height, corner_radius=2);
+        }
+        main_cutout();
+    }
+    standoffs();
 }
 
 module encoder_cutout() {
@@ -97,6 +158,19 @@ module usb_cutout() {
         square([usb_length, usb_width], center=true);
         rounded_corners(usb_length, usb_width, 1);
         }
+}
+
+module standoffs() {
+    translate([0, 0, -standoff_offset_z]) {
+        translate([-(top_plate_length / 2), -(top_plate_width / 2)])
+            cylinder(r=standoff_radius, h=standoff_height, center=true);
+        translate([(top_plate_length / 2), -(top_plate_width / 2)])
+            cylinder(r=standoff_radius, h=standoff_height, center=true);
+        translate([(top_plate_length / 2), (top_plate_width / 2)])
+            cylinder(r=standoff_radius, h=standoff_height, center=true);
+        translate([-(top_plate_length / 2), (top_plate_width / 2)])
+            cylinder(r=standoff_radius, h=standoff_height, center=true);
+    }
 }
 
 module mounting_holes() {
@@ -134,6 +208,17 @@ module row_switch_cutout(row, switch_offset, cutout_count, switch_size=1, add_sm
         %dsa_keycap(x_offset, y_offset, KEYCAP_COLORS[row][i + floor(switch_offset)], switch_size);
         %cherry_mx_switch(x_offset, y_offset);
     }
+}
+
+module 3d_rounded_corners(length, width, height, corner_radius) {
+    translate([-(length / 2), (width / 2)])
+        cylinder(h=height, r=corner_radius, center=true);
+    translate([-(length / 2), -(width / 2)])
+        cylinder(h=height, r=corner_radius, center=true);
+    translate([(length / 2), (width / 2)])
+        cylinder(h=height, r=corner_radius, center=true);
+    translate([(length / 2), -(width / 2)])
+        cylinder(h=height, r=corner_radius, center=true);
 }
 
 module rounded_corners(length, width, corner_radius) {
