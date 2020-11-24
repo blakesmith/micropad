@@ -1,0 +1,5 @@
+#+TITLE: Micropad Todo List
+
+* TODO Design CNC case
+* TODO Replace JTAG connector with pin header holes
+* TODO Research black magic probe and connectors
