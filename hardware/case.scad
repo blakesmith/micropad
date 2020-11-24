@@ -33,6 +33,9 @@ encoder_length = 15;
 apa102_length = 7;
 apa102_width = 5;
 
+usb_width = 5;
+usb_length = 8;
+
 MUTE_PALLETTE = [
     [39, 86, 123],
     [182, 59, 59],
@@ -64,6 +67,7 @@ module top_plate() {
             row_1_switch_cutout();
             encoder_cutout();
             apa102_cutout();
+            usb_cutout();
 //            mounting_holes();
         }
     }
@@ -83,6 +87,14 @@ module apa102_cutout() {
         square([apa102_length, apa102_width], center=true);
         rounded_corners(apa102_length, apa102_width, 1);
     }
+}
+
+module usb_cutout() {
+    translate([0, -(top_plate_width / 2) - 1])
+        hull() {
+        square([usb_length, usb_width], center=true);
+        rounded_corners(usb_length, usb_width, 1);
+        }
 }
 
 module row_0_switch_cutout() {
