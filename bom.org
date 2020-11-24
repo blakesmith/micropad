@@ -1,21 +1,23 @@
 #+TITLE: Micropad Bill of Materials
 
-| Name                              | Quantity | Part Number | Price   | Link                                                                                                                                  |
-|-----------------------------------+----------+-------------+---------+---------------------------------------------------------------------------------------------------------------------------------------|
-| STM32F042K6U6                     |        1 | C110616     | $2.72   | https://lcsc.com/product-detail/ST-Microelectronics_STMicroelectronics_STM32F042K6U6_STM32F042K6U6_C110616.html                       |
-| 0603 2.5A fus                     |        1 | C311073     | $0.03   | https://lcsc.com/product-detail/Surface-Mount-Fuses_AEM_T0603HI3500TM_AEM-T0603HI3500TM_C311073.html                                  |
-| Cherry MX Switches                |        3 |             |         |                                                                                                                                       |
-| LD1117-3.3                        |        1 | C347229     | $0.04   | https://lcsc.com/product-detail/Dropout-Regulators-LDO_UMW-Youtai-Semiconductor-Co-Ltd-LD1117-3-3_C347229.html                        |
-| LED 0805                          |        2 | C601702     | $0.02   | https://lcsc.com/product-detail/Light-Emitting-Diodes-LED_TOGIALED-TJ-S2012CY8T5ALC6B-A5_C601702.html                                 |
-| 100 ohm 0805                      |        2 | C17408      | $0.002  | https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount_UNI-ROYAL-Uniroyal-Elec-0805W8F1000T5E_C17408.html                        |
-| USB Micro B Connector             |        1 | C397452     | $0.02   | https://lcsc.com/product-detail/USB-Connectors_XKB-Connectivity-U254-051T-4BH83-F1S_C397452.html                                      |
-| 10 pin JTAG header                |        1 | C150517     | $0.79   | https://lcsc.com/product-detail/Pin-Header-Female-Header_Amphenol-ICC_20021121-00010C4LF_Amphenol-ICC-20021121-00010C4LF_C150517.html |
-| PEC11R-4015F-S0024 Rotary Encoder |        1 | C143789     | $1.78   | https://lcsc.com/product-detail/Coded-Rotary-Switches_BOURNS_PEC11R-4015F-S0024_PEC11R-4015F-S0024_C143789.html                       |
-| 0.1uF SMD 0805 Cap                |        3 | C49678      | $0.0051 | https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_100nF-104-10-50V_C49678.html                               |
-| 4.7uF SMD 0805 Cap                |        1 | C92762      | $0.026  | https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_TAIYO-YUDEN_EMK212B7475KG-T_4-7uF-475-10-16V_C92762.html   |
-| 0.01uf SMD 0805 Cap               |        2 | C83170      | $0.0045 | https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_10nF-103-10-50V_C83170.html                                |
-| 10k 0805 Resistor                 |        5 | C115295     | $0.0015 | https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount_FH-Guangdong-Fenghua-Advanced-Tech-RS-05K103JT_C115295.html               |
-| APA102 DotStar RGB LED            |        1 | 2343        | $0.45   | https://www.adafruit.com/product/2343                                                                                                 |
+| Name                              | Quantity | Part Number  | Price   | Link                                                                                                                                  |
+|-----------------------------------+----------+--------------+---------+---------------------------------------------------------------------------------------------------------------------------------------|
+| STM32F042K6U6                     |        1 | C110616      | $2.72   | https://lcsc.com/product-detail/ST-Microelectronics_STMicroelectronics_STM32F042K6U6_STM32F042K6U6_C110616.html                       |
+| 0603 2.5A fus                     |        1 | C311073      | $0.03   | https://lcsc.com/product-detail/Surface-Mount-Fuses_AEM_T0603HI3500TM_AEM-T0603HI3500TM_C311073.html                                  |
+| Cherry MX Switches                |        3 |              |         |                                                                                                                                       |
+| LD1117-3.3                        |        1 | C347229      | $0.04   | https://lcsc.com/product-detail/Dropout-Regulators-LDO_UMW-Youtai-Semiconductor-Co-Ltd-LD1117-3-3_C347229.html                        |
+| LED 0805                          |        2 | C601702      | $0.02   | https://lcsc.com/product-detail/Light-Emitting-Diodes-LED_TOGIALED-TJ-S2012CY8T5ALC6B-A5_C601702.html                                 |
+| 100 ohm 0805                      |        2 | C17408       | $0.002  | https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount_UNI-ROYAL-Uniroyal-Elec-0805W8F1000T5E_C17408.html                        |
+| USB Micro B Connector             |        1 | C397452      | $0.02   | https://lcsc.com/product-detail/USB-Connectors_XKB-Connectivity-U254-051T-4BH83-F1S_C397452.html                                      |
+| 10 pin JTAG header                |        1 | C150517      | $0.79   | https://lcsc.com/product-detail/Pin-Header-Female-Header_Amphenol-ICC_20021121-00010C4LF_Amphenol-ICC-20021121-00010C4LF_C150517.html |
+| PEC11R-4015F-S0024 Rotary Encoder |        1 | C143789      | $1.78   | https://lcsc.com/product-detail/Coded-Rotary-Switches_BOURNS_PEC11R-4015F-S0024_PEC11R-4015F-S0024_C143789.html                       |
+| 0.1uF SMD 0805 Cap                |        3 | C49678       | $0.0051 | https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_100nF-104-10-50V_C49678.html                               |
+| 4.7uF SMD 0805 Cap                |        1 | C92762       | $0.026  | https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_TAIYO-YUDEN_EMK212B7475KG-T_4-7uF-475-10-16V_C92762.html   |
+| 0.01uf SMD 0805 Cap               |        2 | C83170       | $0.0045 | https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_10nF-103-10-50V_C83170.html                                |
+| 10k 0805 Resistor                 |        5 | C115295      | $0.0015 | https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount_FH-Guangdong-Fenghua-Advanced-Tech-RS-05K103JT_C115295.html               |
+| APA102 DotStar RGB LED            |        1 | 2343         | $0.45   | https://www.adafruit.com/product/2343                                                                                                 |
+| Encoder Knob                      |        1 | 1568-1600-ND | $1.50   | https://www.digikey.com/en/products/detail/sparkfun-electronics/COM-10001/7229870                                                     |
+|-----------------------------------+----------+--------------+---------+---------------------------------------------------------------------------------------------------------------------------------------|
 
 
 
