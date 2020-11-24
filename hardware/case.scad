@@ -36,7 +36,7 @@ apa102_width = 5;
 usb_width = 5;
 usb_length = 8;
 
-mounting_hole_radius = 2.0 + 0.1;
+mounting_hole_radius = 1.1 + 0.4;
 
 MUTE_PALLETTE = [
     [39, 86, 123],
