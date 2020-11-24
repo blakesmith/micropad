@@ -27,6 +27,12 @@ dsa_keycap_top_length = 12.7;
 dsa_keycap_top_width = 12.7;
 dsa_keycap_height = 7.39;
 
+encoder_width = 13;
+encoder_length = 15;
+
+apa102_length = 7;
+apa102_width = 5;
+
 MUTE_PALLETTE = [
     [39, 86, 123],
     [182, 59, 59],
@@ -56,9 +62,21 @@ module top_plate() {
         union() {
             row_0_switch_cutout();
             row_1_switch_cutout();
+            encoder_cutout();
+            apa102_cutout();
 //            mounting_holes();
         }
     }
+}
+
+module encoder_cutout() {
+    translate([0, -(top_plate_width / 2 / 2)])
+        square([encoder_length, encoder_width], center=true);
+}
+
+module apa102_cutout() {
+    translate([0, -(top_plate_width / 2 / 2 / 2)])
+        square([apa102_length, apa102_width], center=true);
 }
 
 module row_0_switch_cutout() {
