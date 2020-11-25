@@ -1,5 +1,7 @@
 #+TITLE: Micropad Todo List
 
-* TODO Design CNC case
+* DONE Design CNC case
+** DONE Add in tolerance for tallest PCB component?
 * TODO Replace JTAG connector with pin header holes
+* TODO Validate mounting hole sizes
 * TODO Research black magic probe and connectors

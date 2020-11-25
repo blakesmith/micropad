@@ -53,13 +53,14 @@ case_wall_thickness = 3;
 case_length = pcb_length + 1;
 case_width = pcb_width + 1;
 
-case_height = standoff_height + pcb_height + top_plate_height + (case_wall_thickness / 2);
+tallest_pcb_component = 1.8; // LD1777 regulator
+case_height = standoff_height + pcb_height + top_plate_height + (case_wall_thickness / 2) + tallest_pcb_component;
 
 echo("Case height is: ", case_height);
 
 standoff_offset_z = (case_height / 2) - (standoff_height / 2) - (case_wall_thickness / 2);
 top_plate_offset_z = (case_height / 2) - top_plate_height - 0.01;
-pcb_offset_z = top_plate_offset_z - pcb_height;
+pcb_offset_z = top_plate_offset_z - pcb_height - tallest_pcb_component;
 
 encoder_offset_x = 0;
 encoder_offset_y = -(top_plate_width / 2 / 2);
@@ -149,12 +150,11 @@ module case() {
     }
 
     %difference() {
-        color("cyan") {
+        color("cyan")
             hull() {
                 cube([case_length, case_width, case_height], center=true);
                 3d_rounded_corners(length=case_length, width=case_width, height=case_height - chamfer_size, corner_radius=2);
             }
-        }
         union() {
             main_cutout();
             usb_case_cutout();
