@@ -30,6 +30,10 @@ dsa_keycap_height = 7.39;
 encoder_width = 13;
 encoder_length = 15;
 
+encoder_base_height = 6.75;
+encoder_shaft_height = 15.591;
+encoder_shaft_diameter = 6.0;
+
 apa102_length = 7;
 apa102_width = 5;
 
@@ -56,6 +60,13 @@ echo("Case height is: ", case_height);
 standoff_offset_z = (case_height / 2) - (standoff_height / 2) - (case_wall_thickness / 2);
 top_plate_offset_z = (case_height / 2) - top_plate_height - 0.01;
 pcb_offset_z = top_plate_offset_z - pcb_height;
+
+encoder_offset_x = 0;
+encoder_offset_y = -(top_plate_width / 2 / 2);
+encoder_offset_z = (case_height / 2);
+
+knob_radius = 12;
+knob_height = 14;
 
 MUTE_PALLETTE = [
     [39, 86, 123],
@@ -141,10 +152,49 @@ module case() {
         }
     }
     standoffs();
+    encoder();
+}
+
+module encoder() {
+    top_of_encoder_base = encoder_offset_z + (encoder_base_height / 2);
+    encoder_shaft_height_offset = top_of_encoder_base + (encoder_shaft_height / 2);
+
+    module encoder_base() {
+        translate([0, 0, encoder_offset_z]) {
+            color("red")
+                rotate(90)
+                cube([encoder_width,
+                      encoder_length,
+                      encoder_base_height],
+                     center=true);
+        }
+    }
+
+    module encoder_shaft() {
+        translate([0, 0, encoder_shaft_height_offset]) {
+            color("blue")
+                cylinder(h=encoder_shaft_height,
+                         d=encoder_shaft_diameter,
+                         center=true);
+        }
+    }
+
+    module knob() {
+        translate([0, 0, encoder_shaft_height_offset - (knob_height / 3)]) {
+            color("silver")
+                cylinder(r=knob_radius, h=knob_height);
+        }
+    }
+
+    translate([0, encoder_offset_y]) {
+        encoder_base();
+        encoder_shaft();
+        knob();
+    }
 }
 
 module encoder_cutout() {
-    translate([0, -(top_plate_width / 2 / 2)])
+    translate([0, encoder_offset_y])
         hull() {
         square([encoder_length, encoder_width], center=true);
         rounded_corners(encoder_length, encoder_width, 1);
