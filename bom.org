@@ -17,7 +17,6 @@
 | 10k 0805 Resistor                 |        5 | C115295      | $0.0015 | https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount_FH-Guangdong-Fenghua-Advanced-Tech-RS-05K103JT_C115295.html               |
 | APA102 DotStar RGB LED            |        1 | 2343         | $0.45   | https://www.adafruit.com/product/2343                                                                                                 |
 | Encoder Knob                      |        1 | 1568-1600-ND | $1.50   | https://www.digikey.com/en/products/detail/sparkfun-electronics/COM-10001/7229870                                                     |
+| M2 8mm length standoff            |        4 | 732-12828-ND | $0.40   | https://www.digikey.com/en/products/detail/w%C3%BCrth-elektronik/970060244/9488532                                                    |
 |-----------------------------------+----------+--------------+---------+---------------------------------------------------------------------------------------------------------------------------------------|
-
-
 

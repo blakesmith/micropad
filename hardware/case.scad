@@ -47,7 +47,7 @@ pcb_length = 45.13;
 pcb_height = 1.6;
 
 standoff_radius = 2;
-standoff_height = 10;
+standoff_height = 6;
 
 case_wall_thickness = 3;
 case_length = pcb_length + 1;
@@ -150,7 +150,7 @@ module case() {
     }
 
     %difference() {
-        color("cyan")
+        //color("cyan")
             hull() {
                 cube([case_length, case_width, case_height], center=true);
                 3d_rounded_corners(length=case_length, width=case_width, height=case_height - chamfer_size, corner_radius=2);
