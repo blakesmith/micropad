@@ -137,6 +137,15 @@ module case() {
         }
     }
 
+    module usb_case_cutout() {
+        height = top_plate_height + 1;
+        translate([0, -(top_plate_width / 2) - 5, top_plate_offset_z + (height / 2)])
+            hull() {
+            cube([usb_length, usb_width, height], center=true);
+            3d_rounded_corners(usb_length, usb_width, height, corner_radius=1);
+        }
+    }
+
     %difference() {
         hull() {
             cube([case_length, case_width, case_height], center=true);
@@ -144,6 +153,7 @@ module case() {
         }
         union() {
             main_cutout();
+            usb_case_cutout();
             translate([0, 0, -(case_height / 2) - (standoff_height / 2)]) {
                 linear_extrude(height = standoff_height) {
                     mounting_holes();
