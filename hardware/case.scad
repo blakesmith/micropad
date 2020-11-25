@@ -50,8 +50,8 @@ standoff_radius = 2;
 standoff_height = 10;
 
 case_wall_thickness = 3;
-case_length = pcb_length;
-case_width = pcb_width;
+case_length = pcb_length + 1;
+case_width = pcb_width + 1;
 
 case_height = standoff_height + pcb_height + top_plate_height + (case_wall_thickness / 2);
 
@@ -148,7 +148,7 @@ module case() {
         }
     }
 
-    difference() {
+    %difference() {
         color("cyan") {
             hull() {
                 cube([case_length, case_width, case_height], center=true);
