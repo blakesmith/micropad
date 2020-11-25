@@ -124,14 +124,16 @@ module top_plate(height=0) {
 }
 
 module case() {
+    chamfer_size = 2;
+
     module main_cutout() {
         translate([0, 0, case_wall_thickness]) {
             hull() {
                 cube([case_length - case_wall_thickness,
                       case_width - case_wall_thickness,
                       case_height - case_wall_thickness], center=true);
-                3d_rounded_corners(length=case_length - case_wall_thickness,
-                                   width=case_width - case_wall_thickness,
+                3d_rounded_corners(length=case_length - case_wall_thickness - (chamfer_size / 2),
+                                   width=case_width - case_wall_thickness - (chamfer_size / 2),
                                    height=case_height - case_wall_thickness, corner_radius=2);
             }
         }
@@ -150,7 +152,7 @@ module case() {
         color("cyan") {
             hull() {
                 cube([case_length, case_width, case_height], center=true);
-                3d_rounded_corners(length=case_length, width=case_width, height=case_height, corner_radius=2);
+                3d_rounded_corners(length=case_length, width=case_width, height=case_height - chamfer_size, corner_radius=2);
             }
         }
         union() {
