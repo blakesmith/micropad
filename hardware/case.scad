@@ -146,10 +146,12 @@ module case() {
         }
     }
 
-    %difference() {
-        hull() {
-            cube([case_length, case_width, case_height], center=true);
-            3d_rounded_corners(length=case_length, width=case_width, height=case_height, corner_radius=2);
+    difference() {
+        color("cyan") {
+            hull() {
+                cube([case_length, case_width, case_height], center=true);
+                3d_rounded_corners(length=case_length, width=case_width, height=case_height, corner_radius=2);
+            }
         }
         union() {
             main_cutout();
