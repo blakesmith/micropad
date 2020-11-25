@@ -49,12 +49,12 @@ case_wall_thickness = 3;
 case_length = pcb_length;
 case_width = pcb_width;
 
-case_height = standoff_height + pcb_height + top_plate_height + case_wall_thickness;
+case_height = standoff_height + pcb_height + top_plate_height + (case_wall_thickness / 2);
 
 echo("Case height is: ", case_height);
 
 standoff_offset_z = (case_height / 2) - (standoff_height / 2) - (case_wall_thickness / 2);
-top_plate_offset_z = (case_height / 2) - top_plate_height;
+top_plate_offset_z = (case_height / 2) - top_plate_height - 0.01;
 pcb_offset_z = top_plate_offset_z - pcb_height;
 
 MUTE_PALLETTE = [
