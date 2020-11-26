@@ -5,5 +5,7 @@
 * DONE Validate encoder shaft diameter
 * DONE Replace JTAG connector with pin header holes
   - 4-pin connector: https://www.digikey.com/en/products/detail/w-rth-elektronik/490107670412/7917216
-* TODO Validate mounting hole sizes
+* DONE Validate mounting hole sizes
+* DONE Name and logo
 * TODO Research black magic probe and connectors
+* TODO Order boards and components
