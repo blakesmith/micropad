@@ -181,7 +181,7 @@
   )
 
   (module Symbols:OSHW-Logo2_7.3x6mm_SilkScreen (layer F.Cu) (tedit 0) (tstamp 5FC01942)
-    (at 38.735 86.36)
+    (at 38.735 90.17)
     (descr "Open Source Hardware Symbol")
     (tags "Logo Symbol OSHW")
     (attr virtual)
