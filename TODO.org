@@ -7,7 +7,8 @@
   - 4-pin connector: https://www.digikey.com/en/products/detail/w-rth-elektronik/490107670412/7917216
 * DONE Validate mounting hole sizes
 * DONE Name and logo
-* TODO Research black magic probe and connectors
+* DONE Research black magic probe and connectors
+* TODO Validate boot pin button
 * TODO Order boards and components
 * TODO Test top plate fitting
 * TODO Order top plate
