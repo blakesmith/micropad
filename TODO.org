@@ -9,3 +9,6 @@
 * DONE Name and logo
 * TODO Research black magic probe and connectors
 * TODO Order boards and components
+* TODO Test top plate fitting
+* TODO Order top plate
+* TODO Order 3D printed / CNC case
