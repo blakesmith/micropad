@@ -38,7 +38,7 @@ static mut USB_DEV: Option<UsbDevice<UsbBus<hal::usb::Peripheral>>> = None;
 static mut USB_KEYBOARD: Option<KeyboardHidClass<UsbBus<hal::usb::Peripheral>>> = None;
 
 struct Devices {
-    play_pause: PA0<Input<PullDown>>,
+    play_pause: PA0<Input<Floating>>,
     next: PA1<Input<PullDown>>,
     prev: PA2<Input<PullDown>>,
     apa102: Apa102<
@@ -81,10 +81,10 @@ fn setup() -> Devices {
             usb_dm,
             usb_dp,
         ) = (
-            gpioa.pa0.into_pull_down_input(cs),   // Play pause button
-            gpioa.pa1.into_pull_down_input(cs),   // Next button
-            gpioa.pa2.into_pull_down_input(cs),   // Prev button
-            gpioa.pa3.into_pull_up_input(cs),     // Encoder button
+            gpioa.pa0.into_floating_input(cs), // Play pause button, has a 10k pull down resistor on the board
+            gpioa.pa1.into_pull_down_input(cs), // Next button
+            gpioa.pa2.into_pull_down_input(cs), // Prev button
+            gpioa.pa3.into_pull_up_input(cs),  // Encoder button
             gpioa.pa8.into_floating_input(cs), // Encoder A, has a 10k pull up resistor on the board
             gpioa.pa9.into_floating_input(cs), // Encoder B, has a 10k pull up resistor on the board
             gpioa.pa10.into_push_pull_output(cs), // LED usr
