@@ -8,8 +8,8 @@
 * DONE Validate mounting hole sizes
 * DONE Name and logo
 * DONE Research black magic probe and connectors
-* TODO Validate boot pin button
-* TODO Order boards and components
+* DONE Validate boot pin button
+* DONE Order boards and components
 * TODO Test top plate fitting
 * TODO Order top plate
 * TODO Order 3D printed / CNC case
