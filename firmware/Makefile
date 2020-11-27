@@ -11,6 +11,9 @@ target/thumbv6m-none-eabi/debug/micropad:
 target/thumbv6m-none-eabi/release/micropad:
 	cargo build --release
 
+micropad_release.bin: target/thumbv6m-none-eabi/release/micropad
+	cargo objcopy --release --target thumbv6m-none-eabi --bin micropad -- -O binary $@
+
 micropad_debug.hex: target/thumbv6m-none-eabi/debug/micropad
 	cargo objcopy --target thumbv6m-none-eabi --bin micropad -- -O ihex $@
 
@@ -19,6 +22,6 @@ micropad_release.hex: target/thumbv6m-none-eabi/release/micropad
 
 
 clean:
-	rm -rf *.hex
+	rm -rf *.hex *.bin
 
 .PHONY: clean setup
