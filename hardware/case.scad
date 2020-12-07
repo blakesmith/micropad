@@ -41,6 +41,7 @@ usb_width = 5;
 usb_length = 8;
 
 mounting_hole_radius = 1.1 + 0.4;
+mounting_hole_head_radius = mounting_hole_radius + 0.8;
 
 pcb_width = 76.4;
 pcb_length = 45.13;
@@ -149,8 +150,8 @@ module case() {
         }
     }
 
-    %difference() {
-        //color("cyan")
+    difference() {
+        color("cyan")
             hull() {
                 cube([case_length, case_width, case_height], center=true);
                 3d_rounded_corners(length=case_length, width=case_width, height=case_height - chamfer_size, corner_radius=2);
@@ -158,14 +159,19 @@ module case() {
         union() {
             main_cutout();
             usb_case_cutout();
-            translate([0, 0, -(case_height / 2) - (standoff_height / 2)]) {
+            translate([0, 0, -(case_height / 2) - (standoff_height) + (case_wall_thickness / 5)]) {
                 linear_extrude(height = standoff_height) {
-                    mounting_holes();
+                    mounting_holes(radius = mounting_hole_head_radius);
+                }
+            }
+            translate([0, 0, -(case_height / 2) - (standoff_height / 3)]) {
+                linear_extrude(height = standoff_height * 2) {
+                    mounting_holes(radius = mounting_hole_radius);
                 }
             }
         }
     }
-    standoffs();
+    //standoffs();
     encoder();
 }
 
@@ -244,15 +250,15 @@ module standoffs() {
     }
 }
 
-module mounting_holes() {
+module mounting_holes(radius = mounting_hole_radius) {
     translate([-(top_plate_length / 2), -(top_plate_width / 2)])
-        circle(r=mounting_hole_radius);
+        circle(r=radius);
     translate([(top_plate_length / 2), -(top_plate_width / 2)])
-        circle(r=mounting_hole_radius);
+        circle(r=radius);
     translate([(top_plate_length / 2), (top_plate_width / 2)])
-        circle(r=mounting_hole_radius);
+        circle(r=radius);
     translate([-(top_plate_length / 2), (top_plate_width / 2)])
-        circle(r=mounting_hole_radius);
+        circle(r=radius);
 }
 
 module row_0_switch_cutout() {
