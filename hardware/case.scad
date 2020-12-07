@@ -42,6 +42,7 @@ usb_length = 8;
 
 mounting_hole_radius = 1.1 + 0.4;
 mounting_hole_head_radius = mounting_hole_radius + 0.8;
+mounting_hole_head_height = 1.72;
 
 pcb_width = 76.4;
 pcb_length = 45.13;
@@ -159,8 +160,8 @@ module case() {
         union() {
             main_cutout();
             usb_case_cutout();
-            translate([0, 0, -(case_height / 2) - (standoff_height) + (case_wall_thickness / 5)]) {
-                linear_extrude(height = standoff_height) {
+            translate([0, 0, -(case_height / 2) - 0.1]) {
+                linear_extrude(height = mounting_hole_head_height) {
                     mounting_holes(radius = mounting_hole_head_radius);
                 }
             }
