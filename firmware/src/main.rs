@@ -144,9 +144,9 @@ fn setup() -> Devices {
 fn main() -> ! {
     let mut devices = setup();
 
-    let led_color_reset: [RGB8; 1] = [RGB8 { r: 0, g: 64, b: 0 }];
+    let led_color_reset: [RGB8; 1] = [RGB8 { r: 0, g: 0, b: 0 }];
     let led_color_play_pause: [RGB8; 1] = [RGB8 { r: 0, g: 0, b: 64 }];
-    let led_color_next: [RGB8; 1] = [RGB8 { r: 0, g: 0, b: 64 }];
+    let led_color_next: [RGB8; 1] = [RGB8 { r: 0, g: 64, b: 0 }];
     let led_color_prev: [RGB8; 1] = [RGB8 { r: 64, g: 0, b: 0 }];
 
     devices
@@ -168,7 +168,7 @@ fn main() -> ! {
                 for _ in 0..encoder_diff.abs() {
                     if encoder_diff > 0 {
                         keyboard.add_key(Key::Media(MediaCode::VolumeUp));
-                    } else {
+                    } else if encoder_diff < 0 {
                         keyboard.add_key(Key::Media(MediaCode::VolumeDown));
                     }
                 }
