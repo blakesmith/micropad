@@ -212,10 +212,18 @@ fn main() -> ! {
                 // Encoder volume controls
                 for _ in 0..encoder_diff.abs() {
                     if encoder_diff > 0 {
-                        devices.ok_led.toggle().ok();
+                        led_indicator.pulse_color(RGB8 {
+                            r: 0,
+                            b: 255,
+                            g: 255,
+                        });
                         keyboard.add_key(Key::Media(MediaCode::VolumeUp));
                     } else if encoder_diff < 0 {
-                        devices.ok_led.toggle().ok();
+                        led_indicator.pulse_color(RGB8 {
+                            r: 255,
+                            b: 255,
+                            g: 0,
+                        });
                         keyboard.add_key(Key::Media(MediaCode::VolumeDown));
                     }
                 }
