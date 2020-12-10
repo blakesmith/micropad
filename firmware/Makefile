@@ -20,8 +20,11 @@ micropad_debug.hex: target/thumbv6m-none-eabi/debug/micropad
 micropad_release.hex: target/thumbv6m-none-eabi/release/micropad
 	cargo objcopy --release --target thumbv6m-none-eabi --bin micropad -- -O ihex $@
 
+flash: micropad_release.hex
+	./openocd_flash.sh $<
+
 
 clean:
 	rm -rf *.hex *.bin
 
-.PHONY: clean setup
+.PHONY: clean setup flash
