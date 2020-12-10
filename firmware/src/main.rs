@@ -203,30 +203,28 @@ fn main() -> ! {
 
     loop {
         // Sample encoder
-        let encoder_sample = devices.encoder.read_count();
-        let encoder_diff = encoder_sample - current_encoder_count;
+        let encoder_sample: i32 = devices.encoder.read_count();
+        let encoder_diff: i32 = encoder_sample - current_encoder_count;
         current_encoder_count = encoder_sample;
 
         disable_interrupts(|_| unsafe {
             USB_KEYBOARD.as_mut().map(|keyboard| {
-                // Encoder volume controls
-                for _ in 0..encoder_diff.abs() {
-                    if encoder_diff > 0 {
-                        led_indicator.pulse_color(RGB8 {
-                            r: 0,
-                            b: 255,
-                            g: 255,
-                        });
-                        keyboard.add_key(Key::Media(MediaCode::VolumeUp));
-                    } else if encoder_diff < 0 {
-                        led_indicator.pulse_color(RGB8 {
-                            r: 255,
-                            b: 255,
-                            g: 0,
-                        });
-                        keyboard.add_key(Key::Media(MediaCode::VolumeDown));
-                    }
+                if encoder_diff > 0 {
+                    led_indicator.pulse_color(RGB8 {
+                        r: 0,
+                        b: 255,
+                        g: 255,
+                    });
+                    keyboard.add_key(Key::Media(MediaCode::VolumeUp));
+                } else if encoder_diff < 0 {
+                    led_indicator.pulse_color(RGB8 {
+                        r: 255,
+                        b: 255,
+                        g: 0,
+                    });
+                    keyboard.add_key(Key::Media(MediaCode::VolumeDown));
                 }
+
                 // Buttons
                 if devices.play_pause.is_high().unwrap() {
                     led_indicator.pulse_color(RGB8 { r: 0, g: 0, b: 255 });
@@ -238,7 +236,9 @@ fn main() -> ! {
                     led_indicator.pulse_color(RGB8 { r: 255, g: 0, b: 0 });
                     keyboard.add_key(Key::Media(MediaCode::ScanPrev));
                 } else {
-                    keyboard.reset_report();
+                    if encoder_diff == 0 {
+                        keyboard.reset_report();
+                    }
                 }
 
                 if keyboard.report_has_changed() {
