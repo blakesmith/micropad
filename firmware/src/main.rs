@@ -92,7 +92,7 @@ impl LEDIndicatorState {
                 self.color.g = (self.phase >> 8) as u8;
             };
             if self.color.b != 0 {
-                self.color.g = (self.phase >> 8) as u8;
+                self.color.b = (self.phase >> 8) as u8;
             };
             apa102.write(gamma([self.color].iter().cloned())).unwrap();
         }
