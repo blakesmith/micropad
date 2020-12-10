@@ -71,7 +71,7 @@ impl LEDIndicatorState {
 
     fn pulse_color(&mut self, color: RGB8) {
         self.color = color;
-        self.phase = 65535;
+        self.phase = 32768;
     }
 
     fn write_if_blinking(
