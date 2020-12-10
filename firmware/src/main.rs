@@ -53,6 +53,52 @@ struct Devices {
     encoder: RotaryEncoder<PA8<Input<Floating>>, PA9<Input<Floating>>>,
 }
 
+struct LEDIndicatorState {
+    color: RGB8,
+    phase: u16,
+}
+
+impl LEDIndicatorState {
+    fn new() -> Self {
+        Self {
+            color: RGB8 { r: 0, g: 0, b: 0 },
+            phase: 0,
+        }
+    }
+
+    fn pulse_color(&mut self, color: RGB8) {
+        self.color = color;
+        self.phase = 65535;
+    }
+
+    fn write_if_blinking(
+        &mut self,
+        apa102: &mut Apa102<
+            spi::Spi<
+                hal::stm32::SPI1,
+                PA5<Alternate<AF0>>,
+                PA6<Alternate<AF0>>,
+                PA7<Alternate<AF0>>,
+                spi::EightBit,
+            >,
+        >,
+    ) {
+        if self.phase > 0 {
+            self.phase -= 10;
+            if self.color.r != 0 {
+                self.color.r = (self.phase >> 8) as u8;
+            };
+            if self.color.g != 0 {
+                self.color.g = (self.phase >> 8) as u8;
+            };
+            if self.color.b != 0 {
+                self.color.g = (self.phase >> 8) as u8;
+            };
+            apa102.write(gamma([self.color].iter().cloned())).unwrap();
+        }
+    }
+}
+
 fn setup() -> Devices {
     let mut peripherals = pac::Peripherals::take().unwrap();
     let mut core = pac::CorePeripherals::take().unwrap();
@@ -145,15 +191,12 @@ fn main() -> ! {
     let mut devices = setup();
 
     let led_color_reset: [RGB8; 1] = [RGB8 { r: 0, g: 0, b: 0 }];
-    let led_color_play_pause: [RGB8; 1] = [RGB8 { r: 0, g: 0, b: 64 }];
-    let led_color_next: [RGB8; 1] = [RGB8 { r: 0, g: 64, b: 0 }];
-    let led_color_prev: [RGB8; 1] = [RGB8 { r: 64, g: 0, b: 0 }];
-
     devices
         .apa102
         .write(led_color_reset.iter().cloned())
         .unwrap();
 
+    let mut led_indicator = LEDIndicatorState::new();
     let mut current_encoder_count = 0;
 
     loop {
@@ -174,22 +217,13 @@ fn main() -> ! {
                 }
                 // Buttons
                 if devices.play_pause.is_high().unwrap() {
-                    devices
-                        .apa102
-                        .write(gamma(led_color_play_pause.iter().cloned()))
-                        .unwrap();
+                    led_indicator.pulse_color(RGB8 { r: 0, g: 0, b: 255 });
                     keyboard.add_key(Key::Media(MediaCode::PlayPause));
                 } else if devices.next.is_high().unwrap() {
-                    devices
-                        .apa102
-                        .write(gamma(led_color_next.iter().cloned()))
-                        .unwrap();
+                    led_indicator.pulse_color(RGB8 { r: 0, g: 255, b: 0 });
                     keyboard.add_key(Key::Media(MediaCode::ScanNext));
                 } else if devices.prev.is_high().unwrap() {
-                    devices
-                        .apa102
-                        .write(gamma(led_color_prev.iter().cloned()))
-                        .unwrap();
+                    led_indicator.pulse_color(RGB8 { r: 255, g: 0, b: 0 });
                     keyboard.add_key(Key::Media(MediaCode::ScanPrev));
                 } else {
                     keyboard.reset_report();
@@ -200,6 +234,8 @@ fn main() -> ! {
                 }
             });
         });
+
+        led_indicator.write_if_blinking(&mut devices.apa102);
     }
 }
 
