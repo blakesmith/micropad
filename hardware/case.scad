@@ -89,9 +89,9 @@ KEYCAP_COLORS = [
 ];
 
 union() {
-    pcb();
+//    pcb();
     top_plate(top_plate_height);
-    case();
+//    case();
 //    plate(top_plate_length, top_plate_width);
 }
 
@@ -110,7 +110,7 @@ module pcb() {
 
 module top_plate(height=0) {
     translate([0, 0, top_plate_offset_z]) {
-        linear_extrude(height=height) {
+//        linear_extrude(height=height) {
             difference() {
                 plate(top_plate_length, top_plate_width);
                 union() {
@@ -122,7 +122,7 @@ module top_plate(height=0) {
                     mounting_holes();
                 }
             }
-        }
+//        }
     }
 }
 

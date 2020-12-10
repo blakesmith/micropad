@@ -105,7 +105,7 @@ const USB_HID_REPORT_DESCRIPTOR: &[u8] = &[
     0x15, 0x00, //   Logical Minimum (0)
     0x25, 0x01, //   Logical Maximum (1)
     0x75, 0x01, //   Report Size (1)
-    0x95, 0x07, //   Report Count (7)
+    0x95, 0x08, //   Report Count (8)
     0x09, 0xB5, //   Usage (Scan Next Track)
     0x09, 0xB6, //   Usage (Scan Previous Track)
     0x09, 0xB7, //   Usage (Stop)
