@@ -204,6 +204,7 @@ fn main() -> ! {
 
     let mut led_indicator = LEDIndicatorState::new();
     let mut current_encoder_count = 0;
+    let mut input_received = true;
 
     loop {
         // Sample encoder
@@ -211,6 +212,7 @@ fn main() -> ! {
         let encoder_diff: i32 = encoder_sample - current_encoder_count;
         current_encoder_count = encoder_sample;
 
+        input_received = true;
         disable_interrupts(|_| unsafe {
             USB_KEYBOARD.as_mut().map(|keyboard| {
                 // Encoder
@@ -242,16 +244,20 @@ fn main() -> ! {
                 } else {
                     // Encoder diff is zero, and no buttons currently pressed. Reset report.
                     keyboard.reset_report();
+                    input_received = false;
                 }
-
-                led_indicator.write_if_blinking(&mut devices.apa102);
 
                 if keyboard.report_has_changed() {
                     keyboard.send_media_report();
-                    devices.delay.delay_ms(10u32);
                 }
             });
         });
+
+        led_indicator.write_if_blinking(&mut devices.apa102);
+
+        if input_received {
+            devices.delay.delay_ms(10u32);
+        }
     }
 }
 
