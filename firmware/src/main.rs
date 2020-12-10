@@ -248,7 +248,7 @@ fn main() -> ! {
 
                 if keyboard.report_has_changed() {
                     keyboard.send_media_report();
-                    devices.delay.delay_ms(5u32);
+                    devices.delay.delay_ms(10u32);
                 }
             });
         });
