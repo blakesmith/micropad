@@ -16,8 +16,8 @@ use stm32f0xx_hal as hal;
 use hal::{
     delay::Delay,
     gpio::{
-        gpioa::{PA0, PA1, PA10, PA2, PA5, PA6, PA7, PA8, PA9},
-        Alternate, Floating, Input, Output, PullDown, PushPull, AF0,
+        gpioa::{PA0, PA1, PA10, PA2, PA3, PA5, PA6, PA7, PA8, PA9},
+        Alternate, Floating, Input, Output, PullDown, PullUp, PushPull, AF0,
     },
     pac,
     pac::{interrupt, Interrupt},
@@ -44,6 +44,7 @@ struct Devices {
     play_pause: PA0<Input<PullDown>>,
     next: PA2<Input<PullDown>>,
     prev: PA1<Input<PullDown>>,
+    enc_btn: PA3<Input<PullUp>>,
     apa102: Apa102<
         spi::Spi<
             hal::stm32::SPI1,
@@ -120,7 +121,7 @@ fn setup() -> Devices {
             play_pause,
             prev,
             next,
-            _enc_btn,
+            enc_btn,
             enc_cw,
             enc_ccw,
             mut ok_led,
@@ -186,6 +187,7 @@ fn setup() -> Devices {
             play_pause,
             next,
             prev,
+            enc_btn,
             apa102,
             encoder,
         }
@@ -241,6 +243,13 @@ fn main() -> ! {
                 } else if devices.prev.is_high().unwrap() {
                     led_indicator.pulse_color(RGB8 { r: 255, g: 0, b: 0 });
                     keyboard.add_key(Key::Media(MediaCode::ScanPrev));
+                } else if devices.enc_btn.is_low().unwrap() {
+                    led_indicator.pulse_color(RGB8 {
+                        r: 255,
+                        g: 255,
+                        b: 0,
+                    });
+                    keyboard.add_key(Key::Media(MediaCode::Mute));
                 } else {
                     // Encoder diff is zero, and no buttons currently pressed. Reset report.
                     keyboard.reset_report();
