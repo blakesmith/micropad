@@ -15,8 +15,8 @@ use stm32f0xx_hal as hal;
 
 use hal::{
     gpio::{
-        gpioa::{PA0, PA1, PA2, PA5, PA6, PA7, PA8, PA9},
-        Alternate, Floating, Input, PullDown, AF0,
+        gpioa::{PA0, PA1, PA10, PA2, PA5, PA6, PA7, PA8, PA9},
+        Alternate, Floating, Input, Output, PullDown, PushPull, AF0,
     },
     pac,
     pac::{interrupt, Interrupt},
@@ -38,6 +38,7 @@ static mut USB_DEV: Option<UsbDevice<UsbBus<hal::usb::Peripheral>>> = None;
 static mut USB_KEYBOARD: Option<KeyboardHidClass<UsbBus<hal::usb::Peripheral>>> = None;
 
 struct Devices {
+    ok_led: PA10<Output<PushPull>>,
     play_pause: PA0<Input<PullDown>>,
     next: PA2<Input<PullDown>>,
     prev: PA1<Input<PullDown>>,
@@ -177,6 +178,7 @@ fn setup() -> Devices {
 
         ok_led.set_high().ok();
         Devices {
+            ok_led,
             play_pause,
             next,
             prev,
@@ -210,8 +212,10 @@ fn main() -> ! {
                 // Encoder volume controls
                 for _ in 0..encoder_diff.abs() {
                     if encoder_diff > 0 {
+                        devices.ok_led.toggle().ok();
                         keyboard.add_key(Key::Media(MediaCode::VolumeUp));
                     } else if encoder_diff < 0 {
+                        devices.ok_led.toggle().ok();
                         keyboard.add_key(Key::Media(MediaCode::VolumeDown));
                     }
                 }
