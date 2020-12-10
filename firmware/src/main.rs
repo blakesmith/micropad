@@ -14,6 +14,7 @@ use panic_halt as _;
 use stm32f0xx_hal as hal;
 
 use hal::{
+    delay::Delay,
     gpio::{
         gpioa::{PA0, PA1, PA10, PA2, PA5, PA6, PA7, PA8, PA9},
         Alternate, Floating, Input, Output, PullDown, PushPull, AF0,
@@ -39,6 +40,7 @@ static mut USB_KEYBOARD: Option<KeyboardHidClass<UsbBus<hal::usb::Peripheral>>> 
 
 struct Devices {
     ok_led: PA10<Output<PushPull>>,
+    delay: Delay,
     play_pause: PA0<Input<PullDown>>,
     next: PA2<Input<PullDown>>,
     prev: PA1<Input<PullDown>>,
@@ -141,6 +143,7 @@ fn setup() -> Devices {
             gpioa.pa11,                        // USB dm
             gpioa.pa12,                        // USB dp
         );
+        let delay = Delay::new(core.SYST, &rcc);
         let spi = spi::Spi::spi1(
             peripherals.SPI1,
             (sck, miso, mosi),
@@ -179,6 +182,7 @@ fn setup() -> Devices {
         ok_led.set_high().ok();
         Devices {
             ok_led,
+            delay,
             play_pause,
             next,
             prev,
@@ -209,6 +213,7 @@ fn main() -> ! {
 
         disable_interrupts(|_| unsafe {
             USB_KEYBOARD.as_mut().map(|keyboard| {
+                // Encoder
                 if encoder_diff > 0 {
                     led_indicator.pulse_color(RGB8 {
                         r: 0,
@@ -224,9 +229,8 @@ fn main() -> ! {
                     });
                     keyboard.add_key(Key::Media(MediaCode::VolumeDown));
                 }
-
                 // Buttons
-                if devices.play_pause.is_high().unwrap() {
+                else if devices.play_pause.is_high().unwrap() {
                     led_indicator.pulse_color(RGB8 { r: 0, g: 0, b: 255 });
                     keyboard.add_key(Key::Media(MediaCode::PlayPause));
                 } else if devices.next.is_high().unwrap() {
@@ -236,18 +240,18 @@ fn main() -> ! {
                     led_indicator.pulse_color(RGB8 { r: 255, g: 0, b: 0 });
                     keyboard.add_key(Key::Media(MediaCode::ScanPrev));
                 } else {
-                    if encoder_diff == 0 {
-                        keyboard.reset_report();
-                    }
+                    // Encoder diff is zero, and no buttons currently pressed. Reset report.
+                    keyboard.reset_report();
                 }
+
+                led_indicator.write_if_blinking(&mut devices.apa102);
 
                 if keyboard.report_has_changed() {
                     keyboard.send_media_report();
+                    devices.delay.delay_ms(5u32);
                 }
             });
         });
-
-        led_indicator.write_if_blinking(&mut devices.apa102);
     }
 }
 
