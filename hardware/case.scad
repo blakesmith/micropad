@@ -1,5 +1,12 @@
 $fn = 100;
 
+module actual_pcb_board_outline() {
+    rotate(a=180) {
+        translate([0.1, 0])
+            import(file = "micropad/micropad-brd.svg", center=true);
+    }
+}
+
 total_1u_count = 2;
 row_count = 2;
 
@@ -11,8 +18,8 @@ switch_cutout_1u_pitch = switch_cutout_1u_width + switch_cutout_1u_padding;
 top_plate_padding_top_bottom = 0;
 top_plate_padding_left_right = 0;
 top_plate_height = 3.175;
-top_plate_width = ((row_count * switch_cutout_1u_pitch) + top_plate_padding_top_bottom) * 1.854;
-top_plate_length = ((total_1u_count * switch_cutout_1u_pitch) + top_plate_padding_left_right) * 1.03;
+top_plate_width = (((row_count * switch_cutout_1u_pitch) + top_plate_padding_top_bottom) * 1.854) + 1.5;
+top_plate_length = (((total_1u_count * switch_cutout_1u_pitch) + top_plate_padding_left_right) * 1.03) + 1.0;
 
 echo("Top plate dimensions are w=", top_plate_width, ",l=", top_plate_length);
 
@@ -52,7 +59,7 @@ standoff_radius = 2;
 standoff_height = 6;
 
 case_wall_thickness = 3;
-case_length = pcb_length + 1;
+case_length = pcb_length + 1.5;
 case_width = pcb_width + 1;
 
 tallest_pcb_component = 1.8; // LD1777 regulator
@@ -114,10 +121,12 @@ module top_plate(height=0) {
             difference() {
                 plate(top_plate_length, top_plate_width);
                 union() {
-                    row_0_switch_cutout();
-                    row_1_switch_cutout();
-                    encoder_cutout();
-                    apa102_cutout();
+                    translate([0, -1.5]) {
+                        row_0_switch_cutout();
+                        row_1_switch_cutout();
+                        encoder_cutout();
+                        apa102_cutout();
+                    }
                     usb_cutout();
                     mounting_holes();
                 }
