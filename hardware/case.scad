@@ -98,7 +98,7 @@ KEYCAP_COLORS = [
 union() {
 //    pcb();
     top_plate(top_plate_height);
-    case();
+//    case();
 //    plate(top_plate_length, top_plate_width);
 }
 
@@ -226,7 +226,7 @@ module encoder() {
 module encoder_cutout() {
     translate([0, encoder_offset_y])
         hull() {
-        square([encoder_length, encoder_width], center=true);
+        square([encoder_length+1, encoder_width], center=true);
         rounded_corners(encoder_length, encoder_width, 1);
     }
 }
