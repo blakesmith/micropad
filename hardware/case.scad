@@ -60,7 +60,7 @@ standoff_height = 6;
 
 case_wall_thickness = 3;
 case_length = pcb_length + 1.5;
-case_width = pcb_width + 1;
+case_width = pcb_width + 2.2;
 
 tallest_pcb_component = 1.8; // LD1777 regulator
 case_height = standoff_height + pcb_height + top_plate_height + (case_wall_thickness / 2) + tallest_pcb_component;
@@ -98,7 +98,7 @@ KEYCAP_COLORS = [
 union() {
 //    pcb();
     top_plate(top_plate_height);
-//    case();
+    case();
 //    plate(top_plate_length, top_plate_width);
 }
 
