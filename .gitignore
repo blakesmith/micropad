@@ -1,2 +1,3 @@
 firmware/target
 firmware/*.hex
+firmware/*.bin
