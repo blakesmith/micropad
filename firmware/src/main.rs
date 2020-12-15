@@ -28,6 +28,7 @@ use hal::{
 
 use usb_device::bus::UsbBusAllocator;
 use usb_device::prelude::*;
+use usbd_serial::{SerialPort, USB_CLASS_CDC};
 
 use cortex_m::{interrupt::free as disable_interrupts, peripheral::NVIC};
 use cortex_m_rt::entry;
@@ -35,8 +36,12 @@ use cortex_m_rt::entry;
 use crate::hid::{Key, KeyboardHidClass, MediaCode};
 
 static mut USB_BUS_ALLOC: Option<UsbBusAllocator<UsbBus<hal::usb::Peripheral>>> = None;
-static mut USB_DEV: Option<UsbDevice<UsbBus<hal::usb::Peripheral>>> = None;
+
+static mut USB_KEYBOARD_DEV: Option<UsbDevice<UsbBus<hal::usb::Peripheral>>> = None;
 static mut USB_KEYBOARD: Option<KeyboardHidClass<UsbBus<hal::usb::Peripheral>>> = None;
+
+static mut USB_SERIAL_DEV: Option<UsbDevice<UsbBus<hal::usb::Peripheral>>> = None;
+static mut USB_SERIAL: Option<SerialPort<UsbBus<hal::usb::Peripheral>>> = None;
 
 struct Devices {
     ok_led: PA10<Output<PushPull>>,
@@ -168,7 +173,9 @@ fn setup() -> Devices {
                 USB_BUS_ALLOC.as_ref().unwrap()
             };
             USB_KEYBOARD = Some(KeyboardHidClass::new(&bus_allocator));
-            USB_DEV = Some(
+            USB_SERIAL = Some(SerialPort::new(&bus_allocator));
+
+            USB_KEYBOARD_DEV = Some(
                 UsbDeviceBuilder::new(&bus_allocator, UsbVidPid(0xb38, 0x0003))
                     .manufacturer("micropad")
                     .product("micropad")
@@ -176,6 +183,16 @@ fn setup() -> Devices {
                     .max_packet_size_0(64)
                     .build(),
             );
+
+            USB_SERIAL_DEV = Some(
+                UsbDeviceBuilder::new(&bus_allocator, UsbVidPid(0x16c0, 0x27dd))
+                    .manufacturer("micropad")
+                    .product("Serial port")
+                    .serial_number("SP")
+                    .device_class(USB_CLASS_CDC)
+                    .build(),
+            );
+
             core.NVIC.set_priority(Interrupt::USB, 1);
             NVIC::unmask(Interrupt::USB);
         }
@@ -273,9 +290,31 @@ fn main() -> ! {
 fn poll_usb() {
     unsafe {
         disable_interrupts(|_| {
-            USB_DEV.as_mut().map(|device| {
+            USB_KEYBOARD_DEV.as_mut().map(|device| {
                 USB_KEYBOARD.as_mut().map(|keyboard| {
                     device.poll(&mut [keyboard]);
+                });
+            });
+
+            USB_SERIAL_DEV.as_mut().map(|device| {
+                USB_SERIAL.as_mut().map(|serial| {
+                    device.poll(&mut [serial]);
+                    let mut buf = [0u8; 64];
+
+                    if let Ok(count) = serial.read(&mut buf) {
+                        for (i, c) in buf.iter().enumerate() {
+                            if i > count {
+                                break;
+                            }
+                            match c.clone() as char {
+                                // TODO: Handle
+                                'R' => {}
+                                'G' => {}
+                                'O' => {}
+                                _ => {}
+                            }
+                        }
+                    };
                 });
             });
         })
