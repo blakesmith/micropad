@@ -211,7 +211,7 @@ fn main() -> ! {
 
     let mut led_indicator = LEDIndicatorState::new();
     let mut current_encoder_count = 0;
-    let mut input_received = true;
+    let mut key: Option<Key> = None;
 
     loop {
         // Sample encoder
@@ -219,47 +219,50 @@ fn main() -> ! {
         let encoder_diff: i32 = encoder_sample - current_encoder_count;
         current_encoder_count = encoder_sample;
 
-        input_received = true;
+        // Encoder
+        if encoder_diff > 0 {
+            led_indicator.pulse_color(RGB8 {
+                r: 0,
+                b: 255,
+                g: 255,
+            });
+            key = Some(Key::Media(MediaCode::VolumeUp));
+        } else if encoder_diff < 0 {
+            led_indicator.pulse_color(RGB8 {
+                r: 255,
+                b: 255,
+                g: 0,
+            });
+            key = Some(Key::Media(MediaCode::VolumeDown));
+        }
+        // Buttons
+        else if devices.play_pause.is_high().unwrap() {
+            led_indicator.pulse_color(RGB8 { r: 0, g: 0, b: 255 });
+            key = Some(Key::Media(MediaCode::PlayPause));
+        } else if devices.next.is_high().unwrap() {
+            led_indicator.pulse_color(RGB8 { r: 0, g: 255, b: 0 });
+            key = Some(Key::Media(MediaCode::ScanNext));
+        } else if devices.prev.is_high().unwrap() {
+            led_indicator.pulse_color(RGB8 { r: 255, g: 0, b: 0 });
+            key = Some(Key::Media(MediaCode::ScanPrev));
+        } else if devices.enc_btn.is_low().unwrap() {
+            led_indicator.pulse_color(RGB8 {
+                r: 255,
+                g: 255,
+                b: 0,
+            });
+            key = Some(Key::Media(MediaCode::Mute));
+        } else {
+            // Encoder diff is zero, and no buttons currently pressed. Reset report.
+            key = None;
+        }
+
         disable_interrupts(|_| unsafe {
             USB_KEYBOARD.as_mut().map(|keyboard| {
-                // Encoder
-                if encoder_diff > 0 {
-                    led_indicator.pulse_color(RGB8 {
-                        r: 0,
-                        b: 255,
-                        g: 255,
-                    });
-                    keyboard.add_key(Key::Media(MediaCode::VolumeUp));
-                } else if encoder_diff < 0 {
-                    led_indicator.pulse_color(RGB8 {
-                        r: 255,
-                        b: 255,
-                        g: 0,
-                    });
-                    keyboard.add_key(Key::Media(MediaCode::VolumeDown));
-                }
-                // Buttons
-                else if devices.play_pause.is_high().unwrap() {
-                    led_indicator.pulse_color(RGB8 { r: 0, g: 0, b: 255 });
-                    keyboard.add_key(Key::Media(MediaCode::PlayPause));
-                } else if devices.next.is_high().unwrap() {
-                    led_indicator.pulse_color(RGB8 { r: 0, g: 255, b: 0 });
-                    keyboard.add_key(Key::Media(MediaCode::ScanNext));
-                } else if devices.prev.is_high().unwrap() {
-                    led_indicator.pulse_color(RGB8 { r: 255, g: 0, b: 0 });
-                    keyboard.add_key(Key::Media(MediaCode::ScanPrev));
-                } else if devices.enc_btn.is_low().unwrap() {
-                    led_indicator.pulse_color(RGB8 {
-                        r: 255,
-                        g: 255,
-                        b: 0,
-                    });
-                    keyboard.add_key(Key::Media(MediaCode::Mute));
-                } else {
-                    // Encoder diff is zero, and no buttons currently pressed. Reset report.
-                    keyboard.reset_report();
-                    input_received = false;
-                }
+                match key {
+                    Some(k) => keyboard.add_key(k),
+                    None => keyboard.reset_report(),
+                };
 
                 if keyboard.report_has_changed() {
                     keyboard.send_media_report();
@@ -269,7 +272,7 @@ fn main() -> ! {
 
         led_indicator.write_if_blinking(&mut devices.apa102);
 
-        if input_received {
+        if key.is_some() {
             devices.delay.delay_ms(10u32);
         }
     }
@@ -290,7 +293,7 @@ fn poll_usb() {
                                     break;
                                 }
                                 match c.clone() as char {
-                                    'r' | 'g' | 'b' => serial.write(b"ok").unwrap(),
+                                    'r' | 'g' | 'b' => serial.write(b"ok\n").unwrap(),
                                     ch => serial.write(&[ch as u8]).unwrap(),
                                 };
                             }
