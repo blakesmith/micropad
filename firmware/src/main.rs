@@ -32,7 +32,8 @@ use usb_device::bus::UsbBusAllocator;
 use usb_device::prelude::*;
 use usbd_serial::SerialPort;
 
-use cortex_m::{interrupt::free as disable_interrupts, peripheral::NVIC};
+use core::cell::RefCell;
+use cortex_m::{interrupt::free as disable_interrupts, interrupt::Mutex, peripheral::NVIC};
 use cortex_m_rt::entry;
 
 use crate::hid::{Key, KeyboardHidClass, MediaCode};
@@ -41,6 +42,9 @@ static mut USB_BUS_ALLOC: Option<UsbBusAllocator<UsbBus<hal::usb::Peripheral>>> 
 static mut USB_DEV: Option<UsbDevice<UsbBus<hal::usb::Peripheral>>> = None;
 static mut USB_KEYBOARD: Option<KeyboardHidClass<UsbBus<hal::usb::Peripheral>>> = None;
 static mut USB_SERIAL: Option<SerialPort<UsbBus<hal::usb::Peripheral>>> = None;
+
+static CONTROL_STATE: Mutex<RefCell<ControlState>> =
+    Mutex::new(RefCell::new(ControlState { led_enabled: true }));
 
 struct Devices {
     ok_led: PA10<Output<PushPull>>,
@@ -59,6 +63,25 @@ struct Devices {
         >,
     >,
     encoder: RotaryEncoder<PA8<Input<Floating>>, PA9<Input<Floating>>>,
+}
+
+#[derive(Clone)]
+struct ControlState {
+    led_enabled: bool,
+}
+
+impl ControlState {
+    fn enable_led(&mut self) {
+        self.led_enabled = true
+    }
+
+    fn disable_led(&mut self) {
+        self.led_enabled = false
+    }
+
+    fn is_led_enabled(&self) -> bool {
+        self.led_enabled
+    }
 }
 
 struct LEDIndicatorState {
@@ -216,6 +239,8 @@ fn main() -> ! {
     let mut key: Option<Key> = None;
 
     loop {
+        let control_state = disable_interrupts(|cs| CONTROL_STATE.borrow(cs).borrow().clone());
+
         // Sample encoder
         let encoder_sample: i32 = devices.encoder.read_count();
         let encoder_diff: i32 = encoder_sample - current_encoder_count;
@@ -223,36 +248,48 @@ fn main() -> ! {
 
         // Encoder
         if encoder_diff > 0 {
-            led_indicator.pulse_color(RGB8 {
-                r: 0,
-                b: 255,
-                g: 255,
-            });
+            if control_state.is_led_enabled() {
+                led_indicator.pulse_color(RGB8 {
+                    r: 0,
+                    b: 255,
+                    g: 255,
+                });
+            }
             key = Some(Key::Media(MediaCode::VolumeUp));
         } else if encoder_diff < 0 {
-            led_indicator.pulse_color(RGB8 {
-                r: 255,
-                b: 255,
-                g: 0,
-            });
+            if control_state.is_led_enabled() {
+                led_indicator.pulse_color(RGB8 {
+                    r: 255,
+                    b: 255,
+                    g: 0,
+                });
+            }
             key = Some(Key::Media(MediaCode::VolumeDown));
         }
         // Buttons
         else if devices.play_pause.is_high().unwrap() {
-            led_indicator.pulse_color(RGB8 { r: 0, g: 0, b: 255 });
+            if control_state.is_led_enabled() {
+                led_indicator.pulse_color(RGB8 { r: 0, g: 0, b: 255 });
+            }
             key = Some(Key::Media(MediaCode::PlayPause));
         } else if devices.next.is_high().unwrap() {
-            led_indicator.pulse_color(RGB8 { r: 0, g: 255, b: 0 });
+            if control_state.is_led_enabled() {
+                led_indicator.pulse_color(RGB8 { r: 0, g: 255, b: 0 });
+            }
             key = Some(Key::Media(MediaCode::ScanNext));
         } else if devices.prev.is_high().unwrap() {
-            led_indicator.pulse_color(RGB8 { r: 255, g: 0, b: 0 });
+            if control_state.is_led_enabled() {
+                led_indicator.pulse_color(RGB8 { r: 255, g: 0, b: 0 });
+            }
             key = Some(Key::Media(MediaCode::ScanPrev));
         } else if devices.enc_btn.is_low().unwrap() {
-            led_indicator.pulse_color(RGB8 {
-                r: 255,
-                g: 255,
-                b: 0,
-            });
+            if control_state.is_led_enabled() {
+                led_indicator.pulse_color(RGB8 {
+                    r: 255,
+                    g: 255,
+                    b: 0,
+                });
+            }
             key = Some(Key::Media(MediaCode::Mute));
         } else {
             // Encoder diff is zero, and no buttons currently pressed. Reset report.
@@ -283,7 +320,7 @@ fn main() -> ! {
 
 fn poll_usb() {
     unsafe {
-        disable_interrupts(|_| {
+        disable_interrupts(|cs| {
             USB_DEV.as_mut().map(|device| {
                 USB_KEYBOARD.as_mut().map(|keyboard| {
                     USB_SERIAL.as_mut().map(|serial| {
@@ -294,11 +331,20 @@ fn poll_usb() {
                             let message = Message::from(&message_frame);
                             match message {
                                 Message::Ping => {
-                                    message_frame.write_response(serial, Response::Ok).unwrap()
+                                    let _ = message_frame.write_response(serial, Response::Ok);
                                 }
-                                _ => message_frame
-                                    .write_response(serial, Response::UnknownMessage)
-                                    .unwrap(),
+                                Message::DisableLed => {
+                                    CONTROL_STATE.borrow(cs).borrow_mut().disable_led();
+                                    let _ = message_frame.write_response(serial, Response::Ok);
+                                }
+                                Message::EnableLed => {
+                                    CONTROL_STATE.borrow(cs).borrow_mut().enable_led();
+                                    let _ = message_frame.write_response(serial, Response::Ok);
+                                }
+                                _ => {
+                                    let _ = message_frame
+                                        .write_response(serial, Response::UnknownMessage);
+                                }
                             };
                         };
                     });
