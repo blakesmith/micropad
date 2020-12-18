@@ -5,7 +5,8 @@ cotrol and configure the micropad from the connected host computer. It
 uses a standard USB-CDC communication driver.
 
 The first byte indicates the message type, followed by message
-arguments. Successful responses return a 0 byte, error codes non-zero.
+arguments. Successful responses return a 0 byte, error codes
+non-zero. All message frames are 4 byte aligned (32 bit frames).
 
 ## Message Types
 

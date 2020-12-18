@@ -3,9 +3,11 @@
 
 pub mod encoder;
 pub mod hid;
+mod protocol;
 
 use apa102_spi::{Apa102, PixelOrder};
 use encoder::RotaryEncoder;
+use protocol::{Message, MessageFrame, Response};
 use smart_leds::{gamma, SmartLedsWrite};
 use smart_leds_trait::RGB8;
 
@@ -286,18 +288,18 @@ fn poll_usb() {
                 USB_KEYBOARD.as_mut().map(|keyboard| {
                     USB_SERIAL.as_mut().map(|serial| {
                         device.poll(&mut [keyboard, serial]);
-                        let mut buf = [0u8; 64];
+                        let mut message_frame = MessageFrame::new();
 
-                        if let Ok(count) = serial.read(&mut buf) {
-                            for (i, c) in buf.iter().enumerate() {
-                                if i > count {
-                                    break;
+                        if let Ok(_) = message_frame.read(serial) {
+                            let message = Message::from(&message_frame);
+                            match message {
+                                Message::Ping => {
+                                    message_frame.write_response(serial, Response::Ok).unwrap()
                                 }
-                                match c.clone() as char {
-                                    'r' | 'g' | 'b' => serial.write(b"ok\n").unwrap(),
-                                    ch => serial.write(&[ch as u8]).unwrap(),
-                                };
-                            }
+                                _ => message_frame
+                                    .write_response(serial, Response::UnknownMessage)
+                                    .unwrap(),
+                            };
                         };
                     });
                 });
