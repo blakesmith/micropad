@@ -272,6 +272,7 @@ fn main() -> ! {
 
         led_indicator.write_if_blinking(&mut devices.apa102);
 
+        // Make sure we delay outside of our 'disable_interrupts' block
         if key.is_some() {
             devices.delay.delay_ms(10u32);
         }
