@@ -32,16 +32,19 @@ use usb_device::bus::UsbBusAllocator;
 use usb_device::prelude::*;
 use usbd_serial::SerialPort;
 
-use core::cell::RefCell;
+use core::{cell::RefCell, ops::DerefMut};
 use cortex_m::{interrupt::free as disable_interrupts, interrupt::Mutex, peripheral::NVIC};
 use cortex_m_rt::entry;
 
 use crate::hid::{Key, KeyboardHidClass, MediaCode};
 
 static mut USB_BUS_ALLOC: Option<UsbBusAllocator<UsbBus<hal::usb::Peripheral>>> = None;
-static mut USB_DEV: Option<UsbDevice<UsbBus<hal::usb::Peripheral>>> = None;
-static mut USB_KEYBOARD: Option<KeyboardHidClass<UsbBus<hal::usb::Peripheral>>> = None;
-static mut USB_SERIAL: Option<SerialPort<UsbBus<hal::usb::Peripheral>>> = None;
+static USB_DEV: Mutex<RefCell<Option<UsbDevice<UsbBus<hal::usb::Peripheral>>>>> =
+    Mutex::new(RefCell::new(None));
+static USB_KEYBOARD: Mutex<RefCell<Option<KeyboardHidClass<UsbBus<hal::usb::Peripheral>>>>> =
+    Mutex::new(RefCell::new(None));
+static USB_SERIAL: Mutex<RefCell<Option<SerialPort<UsbBus<hal::usb::Peripheral>>>>> =
+    Mutex::new(RefCell::new(None));
 
 static CONTROL_STATE: Mutex<RefCell<ControlState>> =
     Mutex::new(RefCell::new(ControlState { led_enabled: true }));
@@ -189,15 +192,15 @@ fn setup() -> Devices {
             pin_dm: usb_dm,
             pin_dp: usb_dp,
         };
+
         unsafe {
             let bus_allocator = {
                 USB_BUS_ALLOC = Some(UsbBus::new(usb));
                 USB_BUS_ALLOC.as_ref().unwrap()
             };
-            USB_KEYBOARD = Some(KeyboardHidClass::new(&bus_allocator));
-            USB_SERIAL = Some(SerialPort::new(&bus_allocator));
-
-            USB_DEV = Some(
+            *USB_KEYBOARD.borrow(cs).borrow_mut() = Some(KeyboardHidClass::new(&bus_allocator));
+            *USB_SERIAL.borrow(cs).borrow_mut() = Some(SerialPort::new(&bus_allocator));
+            *USB_DEV.borrow(cs).borrow_mut() = Some(
                 UsbDeviceBuilder::new(&bus_allocator, UsbVidPid(0xb38, 0x0003))
                     .manufacturer("micropad")
                     .product("micropad")
@@ -296,8 +299,8 @@ fn main() -> ! {
             key = None;
         }
 
-        disable_interrupts(|_| unsafe {
-            USB_KEYBOARD.as_mut().map(|keyboard| {
+        disable_interrupts(|cs| {
+            if let &mut Some(ref mut keyboard) = USB_KEYBOARD.borrow(cs).borrow_mut().deref_mut() {
                 match key {
                     Some(k) => keyboard.add_key(k),
                     None => keyboard.reset_report(),
@@ -306,7 +309,7 @@ fn main() -> ! {
                 if keyboard.report_has_changed() {
                     keyboard.send_media_report();
                 }
-            });
+            }
         });
 
         led_indicator.write_if_blinking(&mut devices.apa102);
@@ -319,39 +322,36 @@ fn main() -> ! {
 }
 
 fn poll_usb() {
-    unsafe {
-        disable_interrupts(|cs| {
-            USB_DEV.as_mut().map(|device| {
-                USB_KEYBOARD.as_mut().map(|keyboard| {
-                    USB_SERIAL.as_mut().map(|serial| {
-                        device.poll(&mut [keyboard, serial]);
-                        let mut message_frame = MessageFrame::new();
+    disable_interrupts(|cs| {
+        if let (&mut Some(ref mut device), &mut Some(ref mut keyboard), &mut Some(ref mut serial)) = (
+            USB_DEV.borrow(cs).borrow_mut().deref_mut(),
+            USB_KEYBOARD.borrow(cs).borrow_mut().deref_mut(),
+            USB_SERIAL.borrow(cs).borrow_mut().deref_mut(),
+        ) {
+            device.poll(&mut [keyboard, serial]);
+            let mut message_frame = MessageFrame::new();
 
-                        if let Ok(_) = message_frame.read(serial) {
-                            let message = Message::from(&message_frame);
-                            match message {
-                                Message::Ping => {
-                                    let _ = message_frame.write_response(serial, Response::Ok);
-                                }
-                                Message::DisableLed => {
-                                    CONTROL_STATE.borrow(cs).borrow_mut().disable_led();
-                                    let _ = message_frame.write_response(serial, Response::Ok);
-                                }
-                                Message::EnableLed => {
-                                    CONTROL_STATE.borrow(cs).borrow_mut().enable_led();
-                                    let _ = message_frame.write_response(serial, Response::Ok);
-                                }
-                                _ => {
-                                    let _ = message_frame
-                                        .write_response(serial, Response::UnknownMessage);
-                                }
-                            };
-                        };
-                    });
-                });
-            });
-        })
-    }
+            if let Ok(_) = message_frame.read(serial) {
+                let message = Message::from(&message_frame);
+                match message {
+                    Message::Ping => {
+                        let _ = message_frame.write_response(serial, Response::Ok);
+                    }
+                    Message::DisableLed => {
+                        CONTROL_STATE.borrow(cs).borrow_mut().disable_led();
+                        let _ = message_frame.write_response(serial, Response::Ok);
+                    }
+                    Message::EnableLed => {
+                        CONTROL_STATE.borrow(cs).borrow_mut().enable_led();
+                        let _ = message_frame.write_response(serial, Response::Ok);
+                    }
+                    _ => {
+                        let _ = message_frame.write_response(serial, Response::UnknownMessage);
+                    }
+                };
+            };
+        }
+    });
 }
 
 #[interrupt]
