@@ -1,0 +1,13 @@
+[package]
+name = "micropad_host_if"
+version = "0.1.0"
+authors = ["Blake Smith <blakesmith0@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serialport = "4.0.0"
+clap = "2.33.0"
+log = "0.4"
+simple_logger = "1.6"
