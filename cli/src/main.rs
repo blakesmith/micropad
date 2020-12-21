@@ -62,16 +62,38 @@ fn connect_micropad(port_info: &SerialPortInfo) -> Result<Box<dyn SerialPort>, C
         .map_err(|err| err.into())
 }
 
-fn ping() -> Result<(), CliError> {
+fn send_message(message: &Message) -> Result<Response, CliError> {
     let micropad_info = find_micropad(0)?;
     let mut micropad_port = connect_micropad(&micropad_info)?;
 
-    let request_frame = MessageFrame::from(&Message::Ping);
+    let request_frame = MessageFrame::from(message);
     micropad_port.write(&request_frame.buf)?;
     let mut response_buf: [u8; 1] = [0x0; 1];
     micropad_port.read(&mut response_buf)?;
-    match Response::from(response_buf[0]) {
+    Ok(Response::from(response_buf[0]))
+}
+
+fn ping() -> Result<(), CliError> {
+    match send_message(&Message::Ping)? {
         Response::Ok => log::info!("Got ping response!"),
+        response => log::info!("Got non-ok response: {:?}", response)
+    }
+
+    Ok(())
+}
+
+fn disable_led() -> Result<(), CliError> {
+    match send_message(&Message::DisableLed)? {
+        Response::Ok => log::info!("LED disabled"),
+        response => log::info!("Got non-ok response: {:?}", response)
+    }
+
+    Ok(())
+}
+
+fn enable_led() -> Result<(), CliError> {
+    match send_message(&Message::EnableLed)? {
+        Response::Ok => log::info!("LED enabled"),
         response => log::info!("Got non-ok response: {:?}", response)
     }
 
@@ -91,6 +113,12 @@ fn main() {
         .subcommand(
             SubCommand::with_name("ping").about("Ping the micropad to test for connectivity"),
         )
+        .subcommand(
+            SubCommand::with_name("disable_led").about("Disable the status LED (quiet mode)"),
+        )
+        .subcommand(
+            SubCommand::with_name("enable_led").about("Enable the status LED (quiet mode)"),
+        )
         .get_matches();
 
     if matches.is_present("debug") {
@@ -109,7 +137,15 @@ fn main() {
         ("ping", Some(_sub_matches)) => {
             log::info!("Pinging device");
             ping().expect("Failed to ping device");
-        }
+        },
+        ("disable_led", Some(_sub_matches)) => {
+            log::info!("Disabling LED");
+            disable_led().expect("Failed to disable LED");
+        },
+        ("enable_led", Some(_sub_matches)) => {
+            log::info!("Enabling LED");
+            enable_led().expect("Failed to enable LED");
+        },
         (unknown, _) => {
             if unknown.is_empty() {
                 log::error!("No command provided");

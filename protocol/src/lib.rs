@@ -8,6 +8,18 @@ pub enum Message {
     Unknown,
 }
 
+impl Message {
+    fn code(&self) -> u8 {
+        match self {
+            Message::Ping => 0x01,
+            Message::DisableLed => 0x02,
+            Message::EnableLed => 0x03,
+            Message::ChangeLed(_, _, _) => 0x04,
+            Message::Unknown => 0xFF,
+        }
+    }
+}
+
 #[repr(u8)]
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub enum Response {
@@ -62,8 +74,8 @@ impl From<&Message> for MessageFrame {
     fn from(message: &Message) -> Self {
         let mut message_frame = MessageFrame::new();
         match message {
-            Message::Ping => {
-                message_frame.buf[0] = 0x01;
+            Message::Ping | Message::DisableLed | Message::EnableLed => {
+                message_frame.buf[0] = message.code();
                 for i in 1..4 {
                     message_frame.buf[i] = 0x00;
                 }
