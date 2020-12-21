@@ -188,7 +188,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0ee1c47aaa256ecabcaea351eae4a9b01ef39ed810004e298d2511ed284b1525"
 
 [[package]]
-name = "micropad_host_if"
+name = "micropad_ctrl"
 version = "0.1.0"
 dependencies = [
  "clap",

@@ -1,5 +1,5 @@
 [package]
-name = "micropad_host_if"
+name = "micropad_ctrl"
 version = "0.1.0"
 authors = ["Blake Smith <blakesmith0@gmail.com>"]
 edition = "2018"

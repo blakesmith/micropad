@@ -204,7 +204,7 @@ fn setup() -> Devices {
                 UsbDeviceBuilder::new(&bus_allocator, UsbVidPid(0xb38, 0x0003))
                     .manufacturer("micropad")
                     .product("micropad")
-                    .serial_number("DS")
+                    .serial_number("MP00X")
                     .max_packet_size_0(64)
                     .build(),
             );
