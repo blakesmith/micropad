@@ -1,4 +1,4 @@
 firmware/target
 firmware/*.hex
 firmware/*.bin
-micropad_host_if/target
+cli/target
