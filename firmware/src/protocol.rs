@@ -1,5 +1,3 @@
-use embedded_hal::serial::{Read, Write};
-
 pub enum Message {
     Ping,
     DisableLed,
@@ -23,7 +21,7 @@ impl Response {
 }
 
 pub struct MessageFrame {
-    buf: [u8; 4],
+    pub buf: [u8; 4],
 }
 
 impl MessageFrame {
@@ -31,39 +29,6 @@ impl MessageFrame {
         MessageFrame {
             buf: Default::default(),
         }
-    }
-
-    pub fn read<R>(&mut self, reader: &mut R) -> nb::Result<(), R::Error>
-    where
-        R: Read<u8>,
-    {
-        for i in 0..4 {
-            match reader.read() {
-                Ok(b) => self.buf[i] = b,
-                Err(err) => return Err(err),
-            }
-        }
-
-        Ok(())
-    }
-
-    pub fn write_response<W>(
-        &mut self,
-        writer: &mut W,
-        response: Response,
-    ) -> nb::Result<(), W::Error>
-    where
-        W: Write<u8>,
-    {
-        self.buf[0] = response.code();
-        for i in 1..4 {
-            self.buf[i] = 0x0; // Zero pad to the frame boundary
-        }
-
-        for i in 0..4 {
-            writer.write(self.buf[i])?;
-        }
-        Ok(())
     }
 }
 

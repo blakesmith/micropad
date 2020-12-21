@@ -6,6 +6,7 @@ pub mod hid;
 mod protocol;
 
 use apa102_spi::{Apa102, PixelOrder};
+use embedded_hal::serial::{Read, Write};
 use encoder::RotaryEncoder;
 use protocol::{Message, MessageFrame, Response};
 use smart_leds::{gamma, SmartLedsWrite};
@@ -321,6 +322,39 @@ fn main() -> ! {
     }
 }
 
+fn read_into_frame<R>(frame: &mut MessageFrame, reader: &mut R) -> nb::Result<(), R::Error>
+where
+    R: Read<u8>,
+{
+    for i in 0..4 {
+        match reader.read() {
+            Ok(b) => frame.buf[i] = b,
+            Err(err) => return Err(err),
+        }
+    }
+
+    Ok(())
+}
+
+fn write_response<W>(
+    frame: &mut MessageFrame,
+    writer: &mut W,
+    response: Response,
+) -> nb::Result<(), W::Error>
+where
+    W: Write<u8>,
+{
+    frame.buf[0] = response.code();
+    for i in 1..4 {
+        frame.buf[i] = 0x0; // Zero pad to the frame boundary
+    }
+
+    for i in 0..4 {
+        writer.write(frame.buf[i])?;
+    }
+    Ok(())
+}
+
 fn poll_usb() {
     disable_interrupts(|cs| {
         if let (&mut Some(ref mut device), &mut Some(ref mut keyboard), &mut Some(ref mut serial)) = (
@@ -331,22 +365,23 @@ fn poll_usb() {
             device.poll(&mut [keyboard, serial]);
             let mut message_frame = MessageFrame::new();
 
-            if let Ok(_) = message_frame.read(serial) {
+            if let Ok(_) = read_into_frame(&mut message_frame, serial) {
                 let message = Message::from(&message_frame);
                 match message {
                     Message::Ping => {
-                        let _ = message_frame.write_response(serial, Response::Ok);
+                        let _ = write_response(&mut message_frame, serial, Response::Ok);
                     }
                     Message::DisableLed => {
                         CONTROL_STATE.borrow(cs).borrow_mut().disable_led();
-                        let _ = message_frame.write_response(serial, Response::Ok);
+                        let _ = write_response(&mut message_frame, serial, Response::Ok);
                     }
                     Message::EnableLed => {
                         CONTROL_STATE.borrow(cs).borrow_mut().enable_led();
-                        let _ = message_frame.write_response(serial, Response::Ok);
+                        let _ = write_response(&mut message_frame, serial, Response::Ok);
                     }
                     _ => {
-                        let _ = message_frame.write_response(serial, Response::UnknownMessage);
+                        let _ =
+                            write_response(&mut message_frame, serial, Response::UnknownMessage);
                     }
                 };
             };
