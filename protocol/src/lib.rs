@@ -1,3 +1,5 @@
+#![no_std]
+
 pub enum Message {
     Ping,
     DisableLed,

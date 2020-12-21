@@ -3,12 +3,11 @@
 
 pub mod encoder;
 pub mod hid;
-mod protocol;
 
 use apa102_spi::{Apa102, PixelOrder};
 use embedded_hal::serial::{Read, Write};
 use encoder::RotaryEncoder;
-use protocol::{Message, MessageFrame, Response};
+use micropad_protocol::{Message, MessageFrame, Response};
 use smart_leds::{gamma, SmartLedsWrite};
 use smart_leds_trait::RGB8;
 

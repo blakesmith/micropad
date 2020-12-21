@@ -193,9 +193,14 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "log",
+ "micropad_protocol",
  "serialport",
  "simple_logger",
 ]
+
+[[package]]
+name = "micropad_protocol"
+version = "0.1.0"
 
 [[package]]
 name = "nix"

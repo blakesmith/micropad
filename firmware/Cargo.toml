@@ -10,6 +10,7 @@ edition = "2018"
 cortex-m = "0.6.0"
 cortex-m-rt = "0.6.8"
 embedded-hal = "0.2.4"
+micropad_protocol = {version = "0.1", path = "../protocol" }
 nb = "1.0.0"
 panic-halt = "0.2"
 stm32f0xx-hal = {version = "0.17", features = ["stm32f042", "stm32-usbd", "rt"]}

@@ -139,6 +139,7 @@ dependencies = [
  "cortex-m",
  "cortex-m-rt",
  "embedded-hal",
+ "micropad_protocol",
  "nb 1.0.0",
  "panic-halt",
  "smart-leds",
@@ -147,6 +148,10 @@ dependencies = [
  "usb-device",
  "usbd-serial",
 ]
+
+[[package]]
+name = "micropad_protocol"
+version = "0.1.0"
 
 [[package]]
 name = "nb"
