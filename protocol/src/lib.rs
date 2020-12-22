@@ -2,8 +2,7 @@
 
 pub enum Message {
     Ping,
-    DisableLed,
-    EnableLed,
+    SetLedBrightness(u8),
     ChangeLed(u8, u8, u8),
     Unknown,
 }
@@ -12,9 +11,8 @@ impl Message {
     fn code(&self) -> u8 {
         match self {
             Message::Ping => 0x01,
-            Message::DisableLed => 0x02,
-            Message::EnableLed => 0x03,
-            Message::ChangeLed(_, _, _) => 0x04,
+            Message::SetLedBrightness(_) => 0x02,
+            Message::ChangeLed(_, _, _) => 0x03,
             Message::Unknown => 0xFF,
         }
     }
@@ -24,8 +22,7 @@ impl Message {
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub enum Response {
     Ok = 0x00,
-    LedDisabled = 0x01,
-    UnknownMessage = 0x02,
+    UnknownMessage = 0x01,
     Unknown = 0xFF,
 }
 
@@ -39,8 +36,7 @@ impl From<u8> for Response {
     fn from(code: u8) -> Response {
         match code {
             0x00 => Response::Ok,
-            0x01 => Response::LedDisabled,
-            0x02 => Response::UnknownMessage,
+            0x01 => Response::UnknownMessage,
             _ => Response::Unknown,
         }
     }
@@ -62,9 +58,8 @@ impl From<&MessageFrame> for Message {
     fn from(frame: &MessageFrame) -> Message {
         match frame.buf[0] {
             0x01 => Message::Ping,
-            0x02 => Message::DisableLed,
-            0x03 => Message::EnableLed,
-            0x04 => Message::ChangeLed(frame.buf[1], frame.buf[2], frame.buf[3]),
+            0x02 => Message::SetLedBrightness(frame.buf[1]),
+            0x03 => Message::ChangeLed(frame.buf[1], frame.buf[2], frame.buf[3]),
             _ => Message::Unknown,
         }
     }
@@ -74,11 +69,17 @@ impl From<&Message> for MessageFrame {
     fn from(message: &Message) -> Self {
         let mut message_frame = MessageFrame::new();
         match message {
-            Message::Ping | Message::DisableLed | Message::EnableLed => {
+            Message::Ping => {
                 message_frame.buf[0] = message.code();
                 for i in 1..4 {
                     message_frame.buf[i] = 0x00;
                 }
+            },
+            Message::SetLedBrightness(brightness) => {
+                message_frame.buf[0] = message.code();
+                message_frame.buf[1] = *brightness;
+                message_frame.buf[2] = 0x00;
+                message_frame.buf[3] = 0x00;
             },
             _ => {
                 for i in 0..4 {

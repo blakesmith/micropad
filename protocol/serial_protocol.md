@@ -18,23 +18,18 @@ non-zero. All message frames are 4 byte aligned (32 bit frames).
 
 - 0: Success
 
-### 0x02 - Disable RGB LED (Quiet mode)
+### 0x02 - Set LED pulse brightness
 
-*Description*: Disable the RGB LED when keys are pressed.
-*Arguments*: No argments.
+*Description*: Set the LED pulse brightness when keys are pressed
+*Arguments*: 1 byte brightness level.
+
+- Arg 1: Brightness level. 0x00 - 0xFF.
+
 *Valid responses*
 
 - 0: Success
 
-### 0x03 - Enable RGB LED (Default)
-
-*Description*: Disable the RGB LED when keys are pressed.
-*Arguments*: No argments.
-*Valid responses*
-
-- 0: Success
-
-### 0x04 - Change RGB LED Color
+### 0x03 - Change RGB LED Color
 
 *Description*: Set the RGB LED to the specified static color triplet.
 *Arguments*: 3 byte hex color triplet.

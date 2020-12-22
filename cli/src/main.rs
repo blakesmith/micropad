@@ -82,18 +82,9 @@ fn ping() -> Result<(), CliError> {
     Ok(())
 }
 
-fn disable_led() -> Result<(), CliError> {
-    match send_message(&Message::DisableLed)? {
-        Response::Ok => log::info!("LED disabled"),
-        response => log::info!("Got non-ok response: {:?}", response)
-    }
-
-    Ok(())
-}
-
-fn enable_led() -> Result<(), CliError> {
-    match send_message(&Message::EnableLed)? {
-        Response::Ok => log::info!("LED enabled"),
+fn set_led_brightness(brightness: u8) -> Result<(), CliError> {
+    match send_message(&Message::SetLedBrightness(brightness))? {
+        Response::Ok => log::info!("LED brightness changed to: {}", brightness),
         response => log::info!("Got non-ok response: {:?}", response)
     }
 
@@ -114,11 +105,8 @@ fn main() {
             SubCommand::with_name("ping").about("Ping the micropad to test for connectivity"),
         )
         .subcommand(
-            SubCommand::with_name("disable_led").about("Disable the status LED (quiet mode)"),
-        )
-        .subcommand(
-            SubCommand::with_name("enable_led").about("Enable the status LED (quiet mode)"),
-        )
+            SubCommand::with_name("set_led_brightness").about("Set the LED brightness to 0-255")
+            .arg(Arg::with_name("brightness").short("b").required(true).takes_value(true).help("The LED brightness, 0 - 255")))
         .get_matches();
 
     if matches.is_present("debug") {
@@ -138,13 +126,10 @@ fn main() {
             log::info!("Pinging device");
             ping().expect("Failed to ping device");
         },
-        ("disable_led", Some(_sub_matches)) => {
-            log::info!("Disabling LED");
-            disable_led().expect("Failed to disable LED");
-        },
-        ("enable_led", Some(_sub_matches)) => {
-            log::info!("Enabling LED");
-            enable_led().expect("Failed to enable LED");
+        ("set_led_brightness", Some(brightness_matches)) => {
+            let brightness = brightness_matches.value_of("brightness").map(|v| v.parse::<u8>().expect("Brightness must be a value between 0-255!")).unwrap();
+            log::info!("Setting LED brightness to: {}", brightness);
+            set_led_brightness(brightness).expect("Failed to set LED brightness");
         },
         (unknown, _) => {
             if unknown.is_empty() {
