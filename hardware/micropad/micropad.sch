@@ -135,34 +135,23 @@ Wire Wire Line
 Text Label 6350 4550 0    50   ~ 0
 USB_DP
 Wire Wire Line
-	2200 3800 2450 3800
-Text Label 2250 3800 0    50   ~ 0
+	1800 3700 1950 3700
+Text Label 1850 3700 0    50   ~ 0
 USB_DM
 Wire Wire Line
-	2200 3700 2450 3700
-Text Label 2250 3700 0    50   ~ 0
+	1800 3900 1950 3900
+Text Label 1850 3900 0    50   ~ 0
 USB_DP
-$Comp
-L power:GND #PWR03
-U 1 1 5FAFFCA4
-P 1900 4150
-F 0 "#PWR03" H 1900 3900 50  0001 C CNN
-F 1 "GND" H 1905 3977 50  0000 C CNN
-F 2 "" H 1900 4150 50  0001 C CNN
-F 3 "" H 1900 4150 50  0001 C CNN
-	1    1900 4150
-	1    0    0    -1  
-$EndComp
 $Comp
 L power:+5V #PWR04
 U 1 1 5FB029A9
-P 2200 3200
-F 0 "#PWR04" H 2200 3050 50  0001 C CNN
-F 1 "+5V" H 2215 3373 50  0000 C CNN
-F 2 "" H 2200 3200 50  0001 C CNN
-F 3 "" H 2200 3200 50  0001 C CNN
-	1    2200 3200
-	1    0    0    -1  
+P 2350 3200
+F 0 "#PWR04" H 2350 3050 50  0001 C CNN
+F 1 "+5V" H 2365 3373 50  0000 C CNN
+F 2 "" H 2350 3200 50  0001 C CNN
+F 3 "" H 2350 3200 50  0001 C CNN
+	1    2350 3200
+	0    1    1    0   
 $EndComp
 Wire Wire Line
 	1700 2200 1500 2200
@@ -615,11 +604,6 @@ Text Label 6400 3350 0    50   ~ 0
 BOOT
 Wire Wire Line
 	4650 3600 4650 3850
-Wire Wire Line
-	1900 4100 1900 4150
-Wire Wire Line
-	1800 4100 1900 4100
-NoConn ~ 2200 3900
 $Comp
 L apa102:APA102 U3
 U 1 1 5FB655DF
@@ -721,30 +705,16 @@ $EndComp
 $Comp
 L Device:Fuse_Small F1
 U 1 1 5FB7A019
-P 2200 3350
-F 0 "F1" V 2154 3398 50  0000 L CNN
-F 1 "Fuse_Small" V 2245 3398 50  0000 L CNN
-F 2 "Capacitors_SMD:C_0603" H 2200 3350 50  0001 C CNN
-F 3 "~" H 2200 3350 50  0001 C CNN
-	1    2200 3350
-	0    1    1    0   
-$EndComp
-Connection ~ 1900 4100
-$Comp
-L Connector:USB_B_Micro J3
-U 1 1 5FC27EEA
-P 1900 3700
-F 0 "J3" H 1900 4150 50  0000 C CNN
-F 1 "USB_B_Micro" H 1900 4050 50  0000 C CNN
-F 2 "micropad:XKB-U254_USB" H 2050 3650 50  0001 C CNN
-F 3 "~" H 2050 3650 50  0001 C CNN
-	1    1900 3700
-	1    0    0    -1  
+P 2200 3200
+F 0 "F1" H 2150 3300 50  0000 L CNN
+F 1 "Fuse_Small" H 2000 3100 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0603" H 2200 3200 50  0001 C CNN
+F 3 "~" H 2200 3200 50  0001 C CNN
+	1    2200 3200
+	-1   0    0    1   
 $EndComp
 Wire Wire Line
-	2200 3500 2200 3450
-Wire Wire Line
-	2200 3250 2200 3200
+	2300 3200 2350 3200
 $Comp
 L Connector:Conn_01x04_Female J1
 U 1 1 5FC001DB
@@ -786,4 +756,99 @@ Wire Wire Line
 	6150 4650 7300 4650
 Wire Wire Line
 	6150 4750 7300 4750
+Wire Wire Line
+	1800 3200 2100 3200
+Wire Wire Line
+	1800 3800 1950 3800
+Wire Wire Line
+	1950 3800 1950 3700
+Connection ~ 1950 3700
+Wire Wire Line
+	1950 3700 2050 3700
+Wire Wire Line
+	1800 4000 1950 4000
+Wire Wire Line
+	1950 4000 1950 3900
+Connection ~ 1950 3900
+Wire Wire Line
+	1950 3900 2050 3900
+Wire Wire Line
+	900  4700 900  4850
+Wire Wire Line
+	900  4850 1200 4850
+Wire Wire Line
+	1200 4850 1200 4700
+$Comp
+L power:GND #PWR0101
+U 1 1 5FE74BF5
+P 1200 4950
+F 0 "#PWR0101" H 1200 4700 50  0001 C CNN
+F 1 "GND" H 1205 4777 50  0000 C CNN
+F 2 "" H 1200 4950 50  0001 C CNN
+F 3 "" H 1200 4950 50  0001 C CNN
+	1    1200 4950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1200 4850 1200 4950
+Connection ~ 1200 4850
+$Comp
+L Device:R_Small R8
+U 1 1 5FE78123
+P 2750 3400
+F 0 "R8" V 2650 3400 50  0000 C CNN
+F 1 "5.1k" V 2550 3400 50  0000 C CNN
+F 2 "Resistors_SMD:R_0805" H 2750 3400 50  0001 C CNN
+F 3 "~" H 2750 3400 50  0001 C CNN
+	1    2750 3400
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R_Small R9
+U 1 1 5FE790C5
+P 2750 3500
+F 0 "R9" V 2850 3500 50  0000 C CNN
+F 1 "5.1k" V 2950 3500 50  0000 C CNN
+F 2 "Resistors_SMD:R_0805" H 2750 3500 50  0001 C CNN
+F 3 "~" H 2750 3500 50  0001 C CNN
+	1    2750 3500
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	1800 3400 2650 3400
+Wire Wire Line
+	1800 3500 2650 3500
+Wire Wire Line
+	2850 3400 2900 3400
+Wire Wire Line
+	2900 3400 2900 3500
+$Comp
+L power:GND #PWR0102
+U 1 1 5FE87C89
+P 2900 3650
+F 0 "#PWR0102" H 2900 3400 50  0001 C CNN
+F 1 "GND" H 2905 3477 50  0000 C CNN
+F 2 "" H 2900 3650 50  0001 C CNN
+F 3 "" H 2900 3650 50  0001 C CNN
+	1    2900 3650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2850 3500 2900 3500
+Connection ~ 2900 3500
+Wire Wire Line
+	2900 3500 2900 3650
+$Comp
+L Connector:USB_C_Receptacle_USB2.0 J2
+U 1 1 5FE4F0B9
+P 1200 3800
+F 0 "J2" H 1307 4667 50  0000 C CNN
+F 1 "USB_C_Receptacle_USB2.0" H 1307 4576 50  0000 C CNN
+F 2 "micropad:USB_C_Receptacle_Molex_1054500101" H 1350 3800 50  0001 C CNN
+F 3 "https://www.usb.org/sites/default/files/documents/usb_type-c.zip" H 1350 3800 50  0001 C CNN
+	1    1200 3800
+	1    0    0    -1  
+$EndComp
+NoConn ~ 1800 4300
+NoConn ~ 1800 4400
 $EndSCHEMATC
