@@ -44,8 +44,8 @@ encoder_shaft_diameter = 6.0;
 apa102_length = 7;
 apa102_width = 5;
 
-usb_width = 5;
-usb_length = 8;
+usb_width = 9;
+usb_length = 10.1;
 
 mounting_hole_radius = 1.5 + 0.4;
 mounting_hole_head_radius = mounting_hole_radius + 0.8;
@@ -99,8 +99,8 @@ KEYCAP_COLORS = [
 ];
 
 union() {
-//    pcb();
-//    top_plate(top_plate_height);
+    pcb();
+    top_plate(top_plate_height);
     case();
 //    plate(top_plate_length, top_plate_width);
 }
