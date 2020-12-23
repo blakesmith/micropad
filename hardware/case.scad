@@ -17,7 +17,7 @@ switch_cutout_1u_pitch = switch_cutout_1u_width + switch_cutout_1u_padding;
 
 top_plate_padding_top_bottom = 0;
 top_plate_padding_left_right = 0;
-top_plate_height = 3.175;
+top_plate_height = 1.5;
 top_plate_width = (((row_count * switch_cutout_1u_pitch) + top_plate_padding_top_bottom) * 1.854) + 1.5;
 top_plate_length = (((total_1u_count * switch_cutout_1u_pitch) + top_plate_padding_left_right) * 1.03) + 1.0;
 
@@ -59,24 +59,30 @@ pcb_length = 45.13;
 pcb_height = 1.6;
 
 standoff_radius = 2;
-standoff_height = 6;
+standoff_height = 8;
 
+plate_standoff_radius = 2;
+plate_standoff_height = 5;
+
+case_chamfer_size = 2;
 case_wall_thickness = 3;
 case_length = pcb_length + 1.5;
 case_width = pcb_width + 2.2;
 
-tallest_pcb_component = 1.8; // LD1777 regulator
-case_height = standoff_height + pcb_height + top_plate_height + (case_wall_thickness / 2) + tallest_pcb_component;
+case_height = standoff_height + pcb_height + top_plate_height + (case_wall_thickness / 2) + plate_standoff_height - (case_chamfer_size / 2);
 
 echo("Case height is: ", case_height);
 
-standoff_offset_z = (case_height / 2) - (standoff_height / 2) - (case_wall_thickness / 2);
-top_plate_offset_z = (case_height / 2) - top_plate_height - 0.01;
-pcb_offset_z = top_plate_offset_z - pcb_height - tallest_pcb_component;
+standoff_offset_z = (case_height / 2) - (case_wall_thickness / 2);
+pcb_offset_z = -standoff_offset_z + standoff_height;
+plate_standoff_offset_z = pcb_offset_z + pcb_height;
+top_plate_offset_z = plate_standoff_offset_z + plate_standoff_height;
+
+echo("Top plate PCB distance is: ", top_plate_offset_z - pcb_offset_z);
 
 encoder_offset_x = 0;
 encoder_offset_y = -(top_plate_width / 2 / 2);
-encoder_offset_z = (case_height / 2);
+encoder_offset_z = pcb_offset_z + (encoder_base_height / 2) + pcb_height;
 
 knob_radius = 12;
 knob_height = 14;
@@ -139,16 +145,14 @@ module top_plate(height=0) {
 }
 
 module case() {
-    chamfer_size = 2;
-
     module main_cutout() {
         translate([0, 0, case_wall_thickness]) {
             hull() {
                 cube([case_length - case_wall_thickness,
                       case_width - case_wall_thickness,
                       case_height - case_wall_thickness], center=true);
-                3d_rounded_corners(length=case_length - case_wall_thickness - (chamfer_size / 2),
-                                   width=case_width - case_wall_thickness - (chamfer_size / 2),
+                3d_rounded_corners(length=case_length - case_wall_thickness - (case_chamfer_size / 2),
+                                   width=case_width - case_wall_thickness - (case_chamfer_size / 2),
                                    height=case_height - case_wall_thickness, corner_radius=2);
             }
         }
@@ -163,11 +167,11 @@ module case() {
         }
     }
 
-    difference() {
-        color("cyan")
+    %difference() {
+        //color("cyan")
             hull() {
                 cube([case_length, case_width, case_height], center=true);
-                3d_rounded_corners(length=case_length, width=case_width, height=case_height - chamfer_size, corner_radius=2);
+                3d_rounded_corners(length=case_length, width=case_width, height=case_height - case_chamfer_size, corner_radius=2);
             }
         union() {
             main_cutout();
@@ -184,8 +188,8 @@ module case() {
             }
         }
     }
-    //standoffs();
-    //encoder();
+    standoffs();
+    encoder();
 }
 
 module encoder() {
@@ -247,19 +251,32 @@ module usb_cutout() {
         hull() {
         square([usb_length, usb_width], center=true);
         rounded_corners(usb_length, usb_width, 1);
-        }
+    }
 }
 
 module standoffs() {
+    // Lower standoff
     translate([0, 0, -standoff_offset_z]) {
-        translate([-(top_plate_length / 2), -(top_plate_width / 2)])
-            cylinder(r=standoff_radius, h=standoff_height, center=true);
-        translate([(top_plate_length / 2), -(top_plate_width / 2)])
-            cylinder(r=standoff_radius, h=standoff_height, center=true);
-        translate([(top_plate_length / 2), (top_plate_width / 2)])
-            cylinder(r=standoff_radius, h=standoff_height, center=true);
-        translate([-(top_plate_length / 2), (top_plate_width / 2)])
-            cylinder(r=standoff_radius, h=standoff_height, center=true);
+        translate([-mounting_hole_y_offset, -mounting_hole_x_offset])
+            cylinder(r=standoff_radius, h=standoff_height);
+        translate([mounting_hole_y_offset, -mounting_hole_x_offset])
+            cylinder(r=standoff_radius, h=standoff_height);
+        translate([mounting_hole_y_offset, mounting_hole_x_offset])
+            cylinder(r=standoff_radius, h=standoff_height);
+        translate([-mounting_hole_y_offset, mounting_hole_x_offset])
+            cylinder(r=standoff_radius, h=standoff_height);
+    }
+
+    // Middle standoff
+    translate([0, 0, plate_standoff_offset_z]) {
+        translate([-mounting_hole_y_offset, -mounting_hole_x_offset])
+            cylinder(r=plate_standoff_radius, h=plate_standoff_height);
+        translate([mounting_hole_y_offset, -mounting_hole_x_offset])
+            cylinder(r=plate_standoff_radius, h=plate_standoff_height);
+        translate([mounting_hole_y_offset, mounting_hole_x_offset])
+            cylinder(r=plate_standoff_radius, h=plate_standoff_height);
+        translate([-mounting_hole_y_offset, mounting_hole_x_offset])
+            cylinder(r=plate_standoff_radius, h=plate_standoff_height);
     }
 }
 

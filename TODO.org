@@ -14,9 +14,14 @@
 * DONE Order top plate
 * DONE Order 3D printed / CNC case
 * DONE Update PCB to USB-C
+** DONE Case cutout
 * DONE Add additional ground connections to stm32
+* DONE Change to M3 mounting holes
+** DONE Case
+** DONE PCB
 * TODO Solve top plate spacing issue
   - 5mm bottom switch to plate height, 1.5mm top plate thickness
+** TODO Case height
 * TODO Order rev. 2 components 
   - USB C connectors
   - 5.1k resistors
