@@ -46,6 +46,7 @@ apa102_width = 5;
 
 usb_width = 9;
 usb_length = 10.1;
+usb_height = 2.56;
 
 mounting_hole_radius = 1.5 + 0.4;
 mounting_hole_head_radius = mounting_hole_radius + 0.8;
@@ -136,7 +137,7 @@ module top_plate(height=0) {
                         encoder_cutout();
                         apa102_cutout();
                     }
-                    usb_cutout();
+//                    usb_cutout();
                     mounting_holes();
                 }
             }
@@ -159,11 +160,12 @@ module case() {
     }
 
     module usb_case_cutout() {
-        height = top_plate_height + 1;
-        translate([0, -(top_plate_width / 2) - 5, top_plate_offset_z + (height / 2)])
+        height = usb_height + 1;
+        translate([0, -(top_plate_width / 2) - 5, pcb_offset_z + (height / 2) + pcb_height]) {
             hull() {
-            cube([usb_length, usb_width, height], center=true);
-            3d_rounded_corners(usb_length, usb_width, height, corner_radius=1);
+                cube([usb_length, usb_width, height], center=true);
+                3d_rounded_corners(usb_length, usb_width, height, corner_radius=1);
+            }
         }
     }
 
