@@ -10,6 +10,16 @@
 * DONE Research black magic probe and connectors
 * DONE Validate boot pin button
 * DONE Order boards and components
-* TODO Test top plate fitting
-* TODO Order top plate
-* TODO Order 3D printed / CNC case
+* DONE Test top plate fitting
+* DONE Order top plate
+* DONE Order 3D printed / CNC case
+* DONE Update PCB to USB-C
+* DONE Add additional ground connections to stm32
+* TODO Solve top plate spacing issue
+  - 5mm bottom switch to plate height, 1.5mm top plate thickness
+* TODO Order rev. 2 components 
+  - USB C connectors
+  - 5.1k resistors
+* TODO Order rev. 2 of PCBs (gold plating!)
+** TODO Double check mounting hole alignment
+* TODO Order rev. 2 of case and top plate

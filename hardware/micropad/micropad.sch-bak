@@ -664,7 +664,7 @@ U 1 1 5FB65D0A
 P 2400 5050
 F 0 "H1" H 2500 5096 50  0000 L CNN
 F 1 "MountingHole" H 2500 5005 50  0000 L CNN
-F 2 "Mounting_Holes:MountingHole_2.2mm_M2_ISO7380_Pad" H 2400 5050 50  0001 C CNN
+F 2 "Mounting_Holes:MountingHole_3.2mm_M3_ISO7380_Pad" H 2400 5050 50  0001 C CNN
 F 3 "~" H 2400 5050 50  0001 C CNN
 	1    2400 5050
 	1    0    0    -1  
@@ -675,7 +675,7 @@ U 1 1 5FB66F3B
 P 2400 5300
 F 0 "H2" H 2500 5346 50  0000 L CNN
 F 1 "MountingHole" H 2500 5255 50  0000 L CNN
-F 2 "Mounting_Holes:MountingHole_2.2mm_M2_ISO7380_Pad" H 2400 5300 50  0001 C CNN
+F 2 "Mounting_Holes:MountingHole_3.2mm_M3_ISO7380_Pad" H 2400 5300 50  0001 C CNN
 F 3 "~" H 2400 5300 50  0001 C CNN
 	1    2400 5300
 	1    0    0    -1  
@@ -686,7 +686,7 @@ U 1 1 5FB67520
 P 2400 5550
 F 0 "H3" H 2500 5596 50  0000 L CNN
 F 1 "MountingHole" H 2500 5505 50  0000 L CNN
-F 2 "Mounting_Holes:MountingHole_2.2mm_M2_ISO7380_Pad" H 2400 5550 50  0001 C CNN
+F 2 "Mounting_Holes:MountingHole_3.2mm_M3_ISO7380_Pad" H 2400 5550 50  0001 C CNN
 F 3 "~" H 2400 5550 50  0001 C CNN
 	1    2400 5550
 	1    0    0    -1  
@@ -697,7 +697,7 @@ U 1 1 5FB67D38
 P 2400 5800
 F 0 "H4" H 2500 5846 50  0000 L CNN
 F 1 "MountingHole" H 2500 5755 50  0000 L CNN
-F 2 "Mounting_Holes:MountingHole_2.2mm_M2_ISO7380_Pad" H 2400 5800 50  0001 C CNN
+F 2 "Mounting_Holes:MountingHole_3.2mm_M3_ISO7380_Pad" H 2400 5800 50  0001 C CNN
 F 3 "~" H 2400 5800 50  0001 C CNN
 	1    2400 5800
 	1    0    0    -1  
@@ -779,10 +779,10 @@ Wire Wire Line
 Wire Wire Line
 	1200 4850 1200 4700
 $Comp
-L power:GND #PWR?
+L power:GND #PWR0101
 U 1 1 5FE74BF5
 P 1200 4950
-F 0 "#PWR?" H 1200 4700 50  0001 C CNN
+F 0 "#PWR0101" H 1200 4700 50  0001 C CNN
 F 1 "GND" H 1205 4777 50  0000 C CNN
 F 2 "" H 1200 4950 50  0001 C CNN
 F 3 "" H 1200 4950 50  0001 C CNN
@@ -793,23 +793,23 @@ Wire Wire Line
 	1200 4850 1200 4950
 Connection ~ 1200 4850
 $Comp
-L Device:R_Small R?
+L Device:R_Small R8
 U 1 1 5FE78123
 P 2750 3400
-F 0 "R?" V 2650 3400 50  0000 C CNN
+F 0 "R8" V 2650 3400 50  0000 C CNN
 F 1 "5.1k" V 2550 3400 50  0000 C CNN
-F 2 "" H 2750 3400 50  0001 C CNN
+F 2 "Resistors_SMD:R_0805" H 2750 3400 50  0001 C CNN
 F 3 "~" H 2750 3400 50  0001 C CNN
 	1    2750 3400
 	0    1    1    0   
 $EndComp
 $Comp
-L Device:R_Small R?
+L Device:R_Small R9
 U 1 1 5FE790C5
 P 2750 3500
-F 0 "R?" V 2850 3500 50  0000 C CNN
+F 0 "R9" V 2850 3500 50  0000 C CNN
 F 1 "5.1k" V 2950 3500 50  0000 C CNN
-F 2 "" H 2750 3500 50  0001 C CNN
+F 2 "Resistors_SMD:R_0805" H 2750 3500 50  0001 C CNN
 F 3 "~" H 2750 3500 50  0001 C CNN
 	1    2750 3500
 	0    1    1    0   
@@ -823,10 +823,10 @@ Wire Wire Line
 Wire Wire Line
 	2900 3400 2900 3500
 $Comp
-L power:GND #PWR?
+L power:GND #PWR0102
 U 1 1 5FE87C89
 P 2900 3650
-F 0 "#PWR?" H 2900 3400 50  0001 C CNN
+F 0 "#PWR0102" H 2900 3400 50  0001 C CNN
 F 1 "GND" H 2905 3477 50  0000 C CNN
 F 2 "" H 2900 3650 50  0001 C CNN
 F 3 "" H 2900 3650 50  0001 C CNN
@@ -839,12 +839,12 @@ Connection ~ 2900 3500
 Wire Wire Line
 	2900 3500 2900 3650
 $Comp
-L Connector:USB_C_Receptacle_USB2.0 J?
+L Connector:USB_C_Receptacle_USB2.0 J2
 U 1 1 5FE4F0B9
 P 1200 3800
-F 0 "J?" H 1307 4667 50  0000 C CNN
+F 0 "J2" H 1307 4667 50  0000 C CNN
 F 1 "USB_C_Receptacle_USB2.0" H 1307 4576 50  0000 C CNN
-F 2 "" H 1350 3800 50  0001 C CNN
+F 2 "micropad:USB_C_Receptacle_Molex_1054500101" H 1350 3800 50  0001 C CNN
 F 3 "https://www.usb.org/sites/default/files/documents/usb_type-c.zip" H 1350 3800 50  0001 C CNN
 	1    1200 3800
 	1    0    0    -1  
