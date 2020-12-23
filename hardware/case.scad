@@ -2,17 +2,20 @@ $fn = 100;
 
 module actual_pcb_board_outline() {
     rotate(a=180) {
-        translate([0.1, 0])
+        translate([0, 0])
+            linear_extrude(height=10)
             import(file = "micropad/micropad-brd.svg", center=true);
     }
 }
+
+//actual_pcb_board_outline();
 
 total_1u_count = 2;
 row_count = 2;
 
 switch_cutout_1u_width = 14.0;
 switch_cutout_1u_length = 14.0;
-switch_cutout_1u_padding = 5.00;
+switch_cutout_1u_padding = 6.50;
 switch_cutout_1u_pitch = switch_cutout_1u_width + switch_cutout_1u_padding;
 
 top_plate_padding_top_bottom = 0;
@@ -20,6 +23,7 @@ top_plate_padding_left_right = 0;
 top_plate_height = 1.5;
 top_plate_width = (((row_count * switch_cutout_1u_pitch) + top_plate_padding_top_bottom) * 1.854) + 1.5;
 top_plate_length = (((total_1u_count * switch_cutout_1u_pitch) + top_plate_padding_left_right) * 1.03) + 1.0;
+top_plate_corner_radius = 3;
 
 echo("Top plate dimensions are w=", top_plate_width, ",l=", top_plate_length);
 
@@ -106,10 +110,10 @@ KEYCAP_COLORS = [
 ];
 
 union() {
-    pcb();
+//    pcb();
     top_plate(top_plate_height);
-    case();
-//    plate(top_plate_length, top_plate_width);
+//    case();
+//    plate(top_plate_length, top_plate_width, top_plate_corner_radius);
 }
 
 module pcb() {
@@ -117,7 +121,7 @@ module pcb() {
         translate([0, 0, pcb_offset_z]) {
             linear_extrude(height=pcb_height) {
                 difference() {
-                    plate(top_plate_length, top_plate_width);
+                    plate(top_plate_length, top_plate_width, top_plate_corner_radius);
                     mounting_holes();
                 }
             }
@@ -131,13 +135,12 @@ module top_plate(height=0) {
             difference() {
                 plate(top_plate_length, top_plate_width);
                 union() {
-                    translate([0, -1.5]) {
+                    translate([0.75, -2.5]) {
                         row_0_switch_cutout();
                         row_1_switch_cutout();
                         encoder_cutout();
                         apa102_cutout();
                     }
-//                    usb_cutout();
                     mounting_holes();
                 }
             }
@@ -235,7 +238,7 @@ module encoder() {
 module encoder_cutout() {
     translate([0, encoder_offset_y])
         hull() {
-        square([encoder_length+1, encoder_width], center=true);
+        square([encoder_length+2, encoder_width], center=true);
         rounded_corners(encoder_length, encoder_width, 1);
     }
 }
@@ -245,14 +248,6 @@ module apa102_cutout() {
         hull() {
         square([apa102_length, apa102_width], center=true);
         rounded_corners(apa102_length, apa102_width, 1);
-    }
-}
-
-module usb_cutout() {
-    translate([0, -(top_plate_width / 2) - 1])
-        hull() {
-        square([usb_length, usb_width], center=true);
-        rounded_corners(usb_length, usb_width, 1);
     }
 }
 
@@ -315,8 +310,8 @@ module row_switch_cutout(row, switch_offset, cutout_count, switch_size=1, height
                          switch_cutout_1u_length,
                          add_small_stabilizer);
         translate([0, 0, height]) {
-            %dsa_keycap(x_offset, y_offset, KEYCAP_COLORS[row][i + floor(switch_offset)], switch_size);
-            %cherry_mx_switch(x_offset, y_offset);
+            //%dsa_keycap(x_offset, y_offset, KEYCAP_COLORS[row][i + floor(switch_offset)], switch_size);
+            //%cherry_mx_switch(x_offset, y_offset);
         }
     }
 }
@@ -343,13 +338,13 @@ module rounded_corners(length, width, corner_radius) {
         circle(r=corner_radius);
 }
 
-module plate(length, width) {
+module plate(length, width, corner_radius) {
     color("gray", 1.0)
         hull() {
         square([length,
                 width],
                center = true);
-        rounded_corners(length, width, 3);
+        rounded_corners(length, width, corner_radius);
     }
 }
 
