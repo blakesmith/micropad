@@ -47,9 +47,12 @@ apa102_width = 5;
 usb_width = 5;
 usb_length = 8;
 
-mounting_hole_radius = 1.1 + 0.4;
+mounting_hole_radius = 1.5 + 0.4;
 mounting_hole_head_radius = mounting_hole_radius + 0.8;
 mounting_hole_head_height = 1.72;
+
+mounting_hole_x_offset = 65.58 / 2; // Measured from the PCB directly
+mounting_hole_y_offset = 36.83 / 2; // Measured form the PCB directly
 
 pcb_width = 76.4;
 pcb_length = 45.13;
@@ -261,13 +264,13 @@ module standoffs() {
 }
 
 module mounting_holes(radius = mounting_hole_radius) {
-    translate([-(top_plate_length / 2), -(top_plate_width / 2)])
+    translate([-mounting_hole_y_offset, -mounting_hole_x_offset])
         circle(r=radius);
-    translate([(top_plate_length / 2), -(top_plate_width / 2)])
+    translate([mounting_hole_y_offset, -mounting_hole_x_offset])
         circle(r=radius);
-    translate([(top_plate_length / 2), (top_plate_width / 2)])
+    translate([mounting_hole_y_offset, mounting_hole_x_offset])
         circle(r=radius);
-    translate([-(top_plate_length / 2), (top_plate_width / 2)])
+    translate([-mounting_hole_y_offset, mounting_hole_x_offset])
         circle(r=radius);
 }
 
