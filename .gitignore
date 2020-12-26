@@ -1,4 +1,5 @@
 firmware/target
 firmware/*.hex
 firmware/*.bin
+firmware/*.dfu
 cli/target

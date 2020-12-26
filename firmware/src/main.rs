@@ -46,8 +46,9 @@ static USB_KEYBOARD: Mutex<RefCell<Option<KeyboardHidClass<UsbBus<hal::usb::Peri
 static USB_SERIAL: Mutex<RefCell<Option<SerialPort<UsbBus<hal::usb::Peripheral>>>>> =
     Mutex::new(RefCell::new(None));
 
-static CONTROL_STATE: Mutex<RefCell<ControlState>> =
-    Mutex::new(RefCell::new(ControlState { led_brightness: 127 }));
+static CONTROL_STATE: Mutex<RefCell<ControlState>> = Mutex::new(RefCell::new(ControlState {
+    led_brightness: 127,
+}));
 
 struct Devices {
     ok_led: PA10<Output<PushPull>>,
@@ -247,36 +248,54 @@ fn main() -> ! {
 
         // Encoder
         if encoder_diff > 0 {
-            led_indicator.pulse_color(RGB8 {
-                r: 0,
-                b: 255,
-                g: 255,
-            }, control_state.get_led_brightness());
+            led_indicator.pulse_color(
+                RGB8 {
+                    r: 0,
+                    b: 255,
+                    g: 255,
+                },
+                control_state.get_led_brightness(),
+            );
             key = Some(Key::Media(MediaCode::VolumeUp));
         } else if encoder_diff < 0 {
-            led_indicator.pulse_color(RGB8 {
-                r: 255,
-                b: 255,
-                g: 0,
-            }, control_state.get_led_brightness());
+            led_indicator.pulse_color(
+                RGB8 {
+                    r: 255,
+                    b: 255,
+                    g: 0,
+                },
+                control_state.get_led_brightness(),
+            );
             key = Some(Key::Media(MediaCode::VolumeDown));
         }
         // Buttons
         else if devices.play_pause.is_high().unwrap() {
-            led_indicator.pulse_color(RGB8 { r: 0, g: 0, b: 255 }, control_state.get_led_brightness());
+            led_indicator.pulse_color(
+                RGB8 { r: 0, g: 0, b: 255 },
+                control_state.get_led_brightness(),
+            );
             key = Some(Key::Media(MediaCode::PlayPause));
         } else if devices.next.is_high().unwrap() {
-            led_indicator.pulse_color(RGB8 { r: 0, g: 255, b: 0 }, control_state.get_led_brightness());
+            led_indicator.pulse_color(
+                RGB8 { r: 0, g: 255, b: 0 },
+                control_state.get_led_brightness(),
+            );
             key = Some(Key::Media(MediaCode::ScanNext));
         } else if devices.prev.is_high().unwrap() {
-            led_indicator.pulse_color(RGB8 { r: 255, g: 0, b: 0 }, control_state.get_led_brightness());
+            led_indicator.pulse_color(
+                RGB8 { r: 255, g: 0, b: 0 },
+                control_state.get_led_brightness(),
+            );
             key = Some(Key::Media(MediaCode::ScanPrev));
         } else if devices.enc_btn.is_low().unwrap() {
-            led_indicator.pulse_color(RGB8 {
-                r: 255,
-                g: 255,
-                b: 0,
-            }, control_state.get_led_brightness());
+            led_indicator.pulse_color(
+                RGB8 {
+                    r: 255,
+                    g: 255,
+                    b: 0,
+                },
+                control_state.get_led_brightness(),
+            );
             key = Some(Key::Media(MediaCode::Mute));
         } else {
             // Encoder diff is zero, and no buttons currently pressed. Reset report.
@@ -355,7 +374,10 @@ fn poll_usb() {
                         let _ = write_response(&mut message_frame, serial, Response::Ok);
                     }
                     Message::SetLedBrightness(brightness) => {
-                        CONTROL_STATE.borrow(cs).borrow_mut().set_led_brightness(brightness);
+                        CONTROL_STATE
+                            .borrow(cs)
+                            .borrow_mut()
+                            .set_led_brightness(brightness);
                         let _ = write_response(&mut message_frame, serial, Response::Ok);
                     }
                     _ => {
