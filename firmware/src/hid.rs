@@ -202,7 +202,11 @@ pub enum Key {
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 #[allow(dead_code)]
 pub enum ScanCode {
-    A = 0x04,
+    Return = 0x28,
+    RightArrow = 0x4F,
+    LeftArrow = 0x50,
+    DownArrow = 0x51,
+    UpArrow = 0x52,
 }
 
 // See documentation here: https://notes.iopush.net/custom-usb-hid-device-descriptor-media-keyboard/

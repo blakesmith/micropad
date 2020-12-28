@@ -54,15 +54,15 @@ static MUSIC_MODE: [Key; 5] = [
     Key::Media(MediaCode::ScanPrev),
 ];
 
-static A_MODE: [Key; 5] = [
-    Key::Normal(ScanCode::A),
-    Key::Normal(ScanCode::A),
-    Key::Normal(ScanCode::A),
-    Key::Normal(ScanCode::A),
-    Key::Normal(ScanCode::A),
+static NAV_MODE: [Key; 5] = [
+    Key::Normal(ScanCode::DownArrow),
+    Key::Normal(ScanCode::UpArrow),
+    Key::Normal(ScanCode::Return),
+    Key::Normal(ScanCode::RightArrow),
+    Key::Normal(ScanCode::LeftArrow),
 ];
 
-static MODES: [&'static [Key; 5]; 2] = [&MUSIC_MODE, &A_MODE];
+static MODES: [&'static [Key; 5]; 2] = [&MUSIC_MODE, &NAV_MODE];
 
 static CONTROL_STATE: Mutex<RefCell<ControlState>> = Mutex::new(RefCell::new(ControlState {
     led_brightness: 127,
