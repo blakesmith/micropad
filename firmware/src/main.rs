@@ -46,7 +46,9 @@ static USB_KEYBOARD: Mutex<RefCell<Option<KeyboardHidClass<UsbBus<hal::usb::Peri
 static USB_SERIAL: Mutex<RefCell<Option<SerialPort<UsbBus<hal::usb::Peripheral>>>>> =
     Mutex::new(RefCell::new(None));
 
-static MUSIC_MODE: [Key; 5] = [
+type Mode = [Key; 5];
+
+static MUSIC_MODE: Mode = [
     Key::Media(MediaCode::VolumeUp),
     Key::Media(MediaCode::VolumeDown),
     Key::Media(MediaCode::PlayPause),
@@ -54,7 +56,7 @@ static MUSIC_MODE: [Key; 5] = [
     Key::Media(MediaCode::ScanPrev),
 ];
 
-static NAV_MODE: [Key; 5] = [
+static NAV_MODE: Mode = [
     Key::Normal(ScanCode::DownArrow),
     Key::Normal(ScanCode::UpArrow),
     Key::Normal(ScanCode::Return),
@@ -62,7 +64,7 @@ static NAV_MODE: [Key; 5] = [
     Key::Normal(ScanCode::LeftArrow),
 ];
 
-static MODES: [&'static [Key; 5]; 2] = [&MUSIC_MODE, &NAV_MODE];
+static MODES: [&'static Mode; 2] = [&MUSIC_MODE, &NAV_MODE];
 
 static CONTROL_STATE: Mutex<RefCell<ControlState>> = Mutex::new(RefCell::new(ControlState {
     led_brightness: 127,
@@ -107,7 +109,7 @@ impl ControlState {
         self.mode_index = (self.mode_index + 1) % MODES.len();
     }
 
-    fn get_mode(&self) -> &'static [Key; 5] {
+    fn get_mode(&self) -> &'static Mode {
         MODES[self.mode_index]
     }
 }
