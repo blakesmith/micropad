@@ -36,7 +36,7 @@ use core::{cell::RefCell, ops::DerefMut};
 use cortex_m::{interrupt::free as disable_interrupts, interrupt::Mutex, peripheral::NVIC};
 use cortex_m_rt::entry;
 
-use crate::hid::{Key, KeyboardHidClass, MediaCode};
+use crate::hid::{Key, KeyboardHidClass, MediaCode, ScanCode};
 
 static mut USB_BUS_ALLOC: Option<UsbBusAllocator<UsbBus<hal::usb::Peripheral>>> = None;
 static USB_DEV: Mutex<RefCell<Option<UsbDevice<UsbBus<hal::usb::Peripheral>>>>> =
@@ -54,7 +54,15 @@ static MUSIC_MODE: [Key; 5] = [
     Key::Media(MediaCode::ScanPrev),
 ];
 
-static MODES: [&'static [Key; 5]; 1] = [&MUSIC_MODE];
+static A_MODE: [Key; 5] = [
+    Key::Normal(ScanCode::A),
+    Key::Normal(ScanCode::A),
+    Key::Normal(ScanCode::A),
+    Key::Normal(ScanCode::A),
+    Key::Normal(ScanCode::A),
+];
+
+static MODES: [&'static [Key; 5]; 2] = [&MUSIC_MODE, &A_MODE];
 
 static CONTROL_STATE: Mutex<RefCell<ControlState>> = Mutex::new(RefCell::new(ControlState {
     led_brightness: 127,
@@ -93,6 +101,10 @@ impl ControlState {
 
     fn get_led_brightness(&self) -> u8 {
         self.led_brightness
+    }
+
+    fn next_mode(&mut self) {
+        self.mode_index = (self.mode_index + 1) % MODES.len();
     }
 
     fn get_mode(&self) -> &'static [Key; 5] {
@@ -313,7 +325,10 @@ fn main() -> ! {
                 },
                 control_state.get_led_brightness(),
             );
-            key = Some(Key::Media(MediaCode::Mute));
+            key = None; // Switching modes, don't send a HID report.
+            disable_interrupts(|cs| {
+                CONTROL_STATE.borrow(cs).borrow_mut().next_mode();
+            });
         } else {
             // Encoder diff is zero, and no buttons currently pressed. Reset report.
             key = None;
@@ -326,9 +341,8 @@ fn main() -> ! {
                     None => keyboard.reset_report(),
                 };
 
-                if keyboard.report_has_changed() {
-                    keyboard.send_media_report();
-                }
+                keyboard.send_media_report_if_changed();
+                keyboard.send_key_report_if_changed();
             }
         });
 

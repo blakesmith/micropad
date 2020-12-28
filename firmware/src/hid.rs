@@ -40,8 +40,20 @@ impl<B: UsbBus> KeyboardHidClass<'_, B> {
         self.swap_reports();
     }
 
-    pub fn report_has_changed(&self) -> bool {
-        self.reports[self.current_report] != self.reports[(self.current_report + 1) % 2]
+    pub fn send_media_report_if_changed(&mut self) {
+        if self.reports[self.current_report]
+            .media_changed(&self.reports[(self.current_report + 1) % 2])
+        {
+            self.send_media_report();
+        }
+    }
+
+    pub fn send_key_report_if_changed(&mut self) {
+        if self.reports[self.current_report]
+            .keys_changed(&self.reports[(self.current_report + 1) % 2])
+        {
+            self.send_key_report();
+        }
     }
 
     fn swap_reports(&mut self) {
@@ -263,6 +275,16 @@ impl HIDReport {
         buf[2] = self.keys[0];
         buf[3] = self.keys[1];
         buf[4] = self.keys[2];
+    }
+
+    fn media_changed(&self, other: &HIDReport) -> bool {
+        self.media_keys != other.media_keys
+    }
+
+    fn keys_changed(&self, other: &HIDReport) -> bool {
+        self.keys[0] != other.keys[0]
+            || self.keys[1] != other.keys[1]
+            || self.keys[2] != other.keys[2]
     }
 }
 
