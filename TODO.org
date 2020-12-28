@@ -28,4 +28,6 @@
   - Gateron blues
 * DONE Order rev. 2 of PCBs (gold plating!)
 ** DONE Double check mounting hole alignment
+* DONE DFU firmware update prototype
 * TODO Order rev. 2 of case and top plate
+* TODO Easy, in the field DFU updates
