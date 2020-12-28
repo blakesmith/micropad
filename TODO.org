@@ -29,5 +29,6 @@
 * DONE Order rev. 2 of PCBs (gold plating!)
 ** DONE Double check mounting hole alignment
 * DONE DFU firmware update prototype
+* DONE Multiple modes
 * TODO Order rev. 2 of case and top plate
-* TODO Easy, in the field DFU updates
+* TODO Easy, in the field DFU updates?
