@@ -46,8 +46,19 @@ static USB_KEYBOARD: Mutex<RefCell<Option<KeyboardHidClass<UsbBus<hal::usb::Peri
 static USB_SERIAL: Mutex<RefCell<Option<SerialPort<UsbBus<hal::usb::Peripheral>>>>> =
     Mutex::new(RefCell::new(None));
 
+static MUSIC_MODE: [Key; 5] = [
+    Key::Media(MediaCode::VolumeUp),
+    Key::Media(MediaCode::VolumeDown),
+    Key::Media(MediaCode::PlayPause),
+    Key::Media(MediaCode::ScanNext),
+    Key::Media(MediaCode::ScanPrev),
+];
+
+static MODES: [&'static [Key; 5]; 1] = [&MUSIC_MODE];
+
 static CONTROL_STATE: Mutex<RefCell<ControlState>> = Mutex::new(RefCell::new(ControlState {
     led_brightness: 127,
+    mode_index: 0,
 }));
 
 struct Devices {
@@ -72,6 +83,7 @@ struct Devices {
 #[derive(Clone)]
 struct ControlState {
     led_brightness: u8,
+    mode_index: usize,
 }
 
 impl ControlState {
@@ -81,6 +93,10 @@ impl ControlState {
 
     fn get_led_brightness(&self) -> u8 {
         self.led_brightness
+    }
+
+    fn get_mode(&self) -> &'static [Key; 5] {
+        MODES[self.mode_index]
     }
 }
 
@@ -240,6 +256,7 @@ fn main() -> ! {
 
     loop {
         let control_state = disable_interrupts(|cs| CONTROL_STATE.borrow(cs).borrow().clone());
+        let current_mode = control_state.get_mode();
 
         // Sample encoder
         let encoder_sample: i32 = devices.encoder.read_count();
@@ -256,7 +273,7 @@ fn main() -> ! {
                 },
                 control_state.get_led_brightness(),
             );
-            key = Some(Key::Media(MediaCode::VolumeUp));
+            key = Some(current_mode[0]);
         } else if encoder_diff < 0 {
             led_indicator.pulse_color(
                 RGB8 {
@@ -266,7 +283,7 @@ fn main() -> ! {
                 },
                 control_state.get_led_brightness(),
             );
-            key = Some(Key::Media(MediaCode::VolumeDown));
+            key = Some(current_mode[1]);
         }
         // Buttons
         else if devices.play_pause.is_high().unwrap() {
@@ -274,19 +291,19 @@ fn main() -> ! {
                 RGB8 { r: 0, g: 0, b: 255 },
                 control_state.get_led_brightness(),
             );
-            key = Some(Key::Media(MediaCode::PlayPause));
+            key = Some(current_mode[2]);
         } else if devices.next.is_high().unwrap() {
             led_indicator.pulse_color(
                 RGB8 { r: 0, g: 255, b: 0 },
                 control_state.get_led_brightness(),
             );
-            key = Some(Key::Media(MediaCode::ScanNext));
+            key = Some(current_mode[3]);
         } else if devices.prev.is_high().unwrap() {
             led_indicator.pulse_color(
                 RGB8 { r: 255, g: 0, b: 0 },
                 control_state.get_led_brightness(),
             );
-            key = Some(Key::Media(MediaCode::ScanPrev));
+            key = Some(current_mode[4]);
         } else if devices.enc_btn.is_low().unwrap() {
             led_indicator.pulse_color(
                 RGB8 {
