@@ -43,7 +43,7 @@ impl From<u8> for Response {
 }
 
 pub struct MessageFrame {
-    pub buf: [u8; 4],
+    pub buf: [u8; 8],
 }
 
 impl MessageFrame {
@@ -51,6 +51,10 @@ impl MessageFrame {
         MessageFrame {
             buf: Default::default(),
         }
+    }
+
+    pub fn frame_size(&self) -> usize {
+        self.buf.len()
     }
 }
 
@@ -71,18 +75,19 @@ impl From<&Message> for MessageFrame {
         match message {
             Message::Ping => {
                 message_frame.buf[0] = message.code();
-                for i in 1..4 {
+                for i in 1..message_frame.frame_size() {
                     message_frame.buf[i] = 0x00;
                 }
-            },
+            }
             Message::SetLedBrightness(brightness) => {
                 message_frame.buf[0] = message.code();
                 message_frame.buf[1] = *brightness;
-                message_frame.buf[2] = 0x00;
-                message_frame.buf[3] = 0x00;
-            },
+                for i in 2..message_frame.frame_size() {
+                    message_frame.buf[i] = 0x00;
+                }
+            }
             _ => {
-                for i in 0..4 {
+                for i in 0..message_frame.frame_size() {
                     message_frame.buf[i] = 0x00;
                 }
             }
