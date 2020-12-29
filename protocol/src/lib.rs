@@ -3,7 +3,7 @@
 pub enum Message {
     Ping,
     SetLedBrightness(u8),
-    ChangeLed(u8, u8, u8),
+    GetLedBrightness,
     Unknown,
 }
 
@@ -12,7 +12,7 @@ impl Message {
         match self {
             Message::Ping => 0x01,
             Message::SetLedBrightness(_) => 0x02,
-            Message::ChangeLed(_, _, _) => 0x03,
+            Message::GetLedBrightness => 0x03,
             Message::Unknown => 0xFF,
         }
     }
@@ -20,24 +20,24 @@ impl Message {
 
 #[repr(u8)]
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
-pub enum Response {
+pub enum ResponseCode {
     Ok = 0x00,
     UnknownMessage = 0x01,
     Unknown = 0xFF,
 }
 
-impl Response {
+impl ResponseCode {
     pub fn code(&self) -> u8 {
         *self as u8
     }
 }
 
-impl From<u8> for Response {
-    fn from(code: u8) -> Response {
+impl From<u8> for ResponseCode {
+    fn from(code: u8) -> ResponseCode {
         match code {
-            0x00 => Response::Ok,
-            0x01 => Response::UnknownMessage,
-            _ => Response::Unknown,
+            0x00 => ResponseCode::Ok,
+            0x01 => ResponseCode::UnknownMessage,
+            _ => ResponseCode::Unknown,
         }
     }
 }
@@ -63,7 +63,7 @@ impl From<&MessageFrame> for Message {
         match frame.buf[0] {
             0x01 => Message::Ping,
             0x02 => Message::SetLedBrightness(frame.buf[1]),
-            0x03 => Message::ChangeLed(frame.buf[1], frame.buf[2], frame.buf[3]),
+            0x03 => Message::GetLedBrightness,
             _ => Message::Unknown,
         }
     }
@@ -73,7 +73,7 @@ impl From<&Message> for MessageFrame {
     fn from(message: &Message) -> Self {
         let mut message_frame = MessageFrame::new();
         match message {
-            Message::Ping => {
+            Message::Ping | Message::GetLedBrightness => {
                 message_frame.buf[0] = message.code();
                 for i in 1..message_frame.frame_size() {
                     message_frame.buf[i] = 0x00;
@@ -86,7 +86,7 @@ impl From<&Message> for MessageFrame {
                     message_frame.buf[i] = 0x00;
                 }
             }
-            _ => {
+            Message::Unknown => {
                 for i in 0..message_frame.frame_size() {
                     message_frame.buf[i] = 0x00;
                 }

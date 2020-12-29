@@ -1,8 +1,8 @@
 use clap::{App, Arg, SubCommand};
 use log;
 use log::LevelFilter;
+use micropad_protocol::{Message, MessageFrame, ResponseCode};
 use simple_logger::SimpleLogger;
-use micropad_protocol::{Message, MessageFrame, Response};
 
 use serialport::{SerialPort, SerialPortInfo, SerialPortType};
 use std::time::Duration;
@@ -62,7 +62,7 @@ fn connect_micropad(port_info: &SerialPortInfo) -> Result<Box<dyn SerialPort>, C
         .map_err(|err| err.into())
 }
 
-fn send_message(message: &Message) -> Result<Response, CliError> {
+fn send_message(message: &Message) -> Result<ResponseCode, CliError> {
     let micropad_info = find_micropad(0)?;
     let mut micropad_port = connect_micropad(&micropad_info)?;
 
@@ -70,13 +70,13 @@ fn send_message(message: &Message) -> Result<Response, CliError> {
     micropad_port.write(&request_frame.buf)?;
     let mut response_buf: [u8; 1] = [0x0; 1];
     micropad_port.read(&mut response_buf)?;
-    Ok(Response::from(response_buf[0]))
+    Ok(ResponseCode::from(response_buf[0]))
 }
 
 fn ping() -> Result<(), CliError> {
     match send_message(&Message::Ping)? {
-        Response::Ok => log::info!("Got ping response!"),
-        response => log::info!("Got non-ok response: {:?}", response)
+        ResponseCode::Ok => log::info!("Got ping response!"),
+        response => log::info!("Got non-ok response: {:?}", response),
     }
 
     Ok(())
@@ -84,8 +84,8 @@ fn ping() -> Result<(), CliError> {
 
 fn set_led_brightness(brightness: u8) -> Result<(), CliError> {
     match send_message(&Message::SetLedBrightness(brightness))? {
-        Response::Ok => log::info!("LED brightness changed to: {}", brightness),
-        response => log::info!("Got non-ok response: {:?}", response)
+        ResponseCode::Ok => log::info!("LED brightness changed to: {}", brightness),
+        response => log::info!("Got non-ok response: {:?}", response),
     }
 
     Ok(())
@@ -105,8 +105,16 @@ fn main() {
             SubCommand::with_name("ping").about("Ping the micropad to test for connectivity"),
         )
         .subcommand(
-            SubCommand::with_name("set_led_brightness").about("Set the LED brightness to 0-255")
-            .arg(Arg::with_name("brightness").short("b").required(true).takes_value(true).help("The LED brightness, 0 - 255")))
+            SubCommand::with_name("set_led_brightness")
+                .about("Set the LED brightness to 0-255")
+                .arg(
+                    Arg::with_name("brightness")
+                        .short("b")
+                        .required(true)
+                        .takes_value(true)
+                        .help("The LED brightness, 0 - 255"),
+                ),
+        )
         .get_matches();
 
     if matches.is_present("debug") {
@@ -125,12 +133,18 @@ fn main() {
         ("ping", Some(_sub_matches)) => {
             log::info!("Pinging device");
             ping().expect("Failed to ping device");
-        },
+        }
         ("set_led_brightness", Some(brightness_matches)) => {
-            let brightness = brightness_matches.value_of("brightness").map(|v| v.parse::<u8>().expect("Brightness must be a value between 0-255!")).unwrap();
+            let brightness = brightness_matches
+                .value_of("brightness")
+                .map(|v| {
+                    v.parse::<u8>()
+                        .expect("Brightness must be a value between 0-255!")
+                })
+                .unwrap();
             log::info!("Setting LED brightness to: {}", brightness);
             set_led_brightness(brightness).expect("Failed to set LED brightness");
-        },
+        }
         (unknown, _) => {
             if unknown.is_empty() {
                 log::error!("No command provided");
