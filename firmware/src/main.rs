@@ -93,7 +93,7 @@ struct Devices {
 #[derive(Clone)]
 struct ControlState {
     led_brightness: u8,
-    mode_index: usize,
+    mode_index: u8,
 }
 
 impl ControlState {
@@ -106,11 +106,15 @@ impl ControlState {
     }
 
     fn next_mode(&mut self) {
-        self.mode_index = (self.mode_index + 1) % MODES.len();
+        self.mode_index = (self.mode_index + 1) % MODES.len() as u8;
+    }
+
+    fn get_mode_index(&self) -> u8 {
+        self.mode_index
     }
 
     fn get_mode(&self) -> &'static Mode {
-        MODES[self.mode_index]
+        MODES[self.mode_index as usize]
     }
 }
 
@@ -430,6 +434,19 @@ fn poll_usb() {
                             serial,
                             ResponseCode::Ok,
                             &ResponsePayload::LedBrightness(brightness),
+                        );
+                    }
+                    Message::GetModeInfo => {
+                        let current_mode = CONTROL_STATE.borrow(cs).borrow().get_mode_index();
+                        let _ = write_response_payload(
+                            &mut message_frame,
+                            serial,
+                            ResponseCode::Ok,
+                            &ResponsePayload::ModeInfo {
+                                built_in_mode_count: MODES.len() as u8,
+                                user_mode_count: 0,
+                                current_mode_index: current_mode,
+                            },
                         );
                     }
                     _ => {

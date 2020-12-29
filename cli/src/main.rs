@@ -103,6 +103,26 @@ fn get_led_brightness() -> Result<(), CliError> {
     Ok(())
 }
 
+fn get_mode_info() -> Result<(), CliError> {
+    match send_message(&Message::GetModeInfo)? {
+        (
+            ResponseCode::Ok,
+            ResponsePayload::ModeInfo {
+                built_in_mode_count,
+                user_mode_count,
+                current_mode_index,
+            },
+        ) => {
+            log::info!("Built in mode count: {}", built_in_mode_count);
+            log::info!("User mode count: {}", user_mode_count);
+            log::info!("Current mode index: {}", current_mode_index);
+        }
+        (response, _) => log::error!("Got non-ok response: {:?}", response),
+    }
+
+    Ok(())
+}
+
 fn main() {
     let matches = App::new("Micropad cli interface")
         .version("0.1")
@@ -160,6 +180,10 @@ fn main() {
         ("get_led_brightness", Some(_sub_matches)) => {
             log::info!("Getting LED brightness");
             get_led_brightness().expect("Failed to get LED brightness");
+        }
+        ("get_mode_info", Some(_sub_matches)) => {
+            log::info!("Getting mode info");
+            get_mode_info().expect("Failed to get mode info");
         }
         (unknown, _) => {
             if unknown.is_empty() {
