@@ -6,7 +6,7 @@ uses a standard USB-CDC communication driver.
 
 The first byte indicates the message type, followed by message
 arguments. Successful responses return a 0 byte, error codes
-non-zero. All message frames are 8 byte aligned (64 bit frames).
+non-zero. All message frames (requests and responses) are 8 byte aligned (64 bit frames).
 
 Responses contain a response code in the first byte of the message
 frame. Responses can also contain response arguments in the message

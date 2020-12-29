@@ -27,7 +27,7 @@ pub enum ResponseCode {
 }
 
 impl ResponseCode {
-    pub fn code(&self) -> u8 {
+    pub fn raw(&self) -> u8 {
         *self as u8
     }
 }
@@ -38,6 +38,39 @@ impl From<u8> for ResponseCode {
             0x00 => ResponseCode::Ok,
             0x01 => ResponseCode::UnknownMessage,
             _ => ResponseCode::Unknown,
+        }
+    }
+}
+
+#[derive(Debug)]
+pub enum ResponsePayload {
+    None,
+    LedBrightness(u8),
+}
+
+impl ResponsePayload {
+    pub fn fill(&self, frame: &mut MessageFrame) {
+        match self {
+            ResponsePayload::None => {
+                for i in 1..frame.frame_size() {
+                    frame.buf[i] = 0x00;
+                }
+            }
+            ResponsePayload::LedBrightness(brightness) => {
+                frame.buf[1] = *brightness;
+                for i in 2..frame.frame_size() {
+                    frame.buf[i] = 0x00;
+                }
+            }
+        }
+    }
+
+    fn from_message(message: &Message, response_frame: &MessageFrame) -> ResponsePayload {
+        match message {
+            Message::Ping | Message::SetLedBrightness(_) | Message::Unknown => {
+                ResponsePayload::None
+            }
+            Message::GetLedBrightness => ResponsePayload::LedBrightness(response_frame.buf[1]),
         }
     }
 }
@@ -55,6 +88,12 @@ impl MessageFrame {
 
     pub fn frame_size(&self) -> usize {
         self.buf.len()
+    }
+
+    pub fn into_code_and_payload(self, message: &Message) -> (ResponseCode, ResponsePayload) {
+        let code = ResponseCode::from(self.buf[0]);
+        let payload = ResponsePayload::from_message(message, &self);
+        (code, payload)
     }
 }
 

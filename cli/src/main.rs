@@ -1,7 +1,7 @@
 use clap::{App, Arg, SubCommand};
 use log;
 use log::LevelFilter;
-use micropad_protocol::{Message, MessageFrame, ResponseCode};
+use micropad_protocol::{Message, MessageFrame, ResponseCode, ResponsePayload};
 use simple_logger::SimpleLogger;
 
 use serialport::{SerialPort, SerialPortInfo, SerialPortType};
@@ -62,21 +62,22 @@ fn connect_micropad(port_info: &SerialPortInfo) -> Result<Box<dyn SerialPort>, C
         .map_err(|err| err.into())
 }
 
-fn send_message(message: &Message) -> Result<ResponseCode, CliError> {
+fn send_message(message: &Message) -> Result<(ResponseCode, ResponsePayload), CliError> {
     let micropad_info = find_micropad(0)?;
     let mut micropad_port = connect_micropad(&micropad_info)?;
 
     let request_frame = MessageFrame::from(message);
     micropad_port.write(&request_frame.buf)?;
-    let mut response_buf: [u8; 1] = [0x0; 1];
-    micropad_port.read(&mut response_buf)?;
-    Ok(ResponseCode::from(response_buf[0]))
+
+    let mut response_frame = MessageFrame::new();
+    micropad_port.read(&mut response_frame.buf)?;
+    Ok(response_frame.into_code_and_payload(message))
 }
 
 fn ping() -> Result<(), CliError> {
     match send_message(&Message::Ping)? {
-        ResponseCode::Ok => log::info!("Got ping response!"),
-        response => log::info!("Got non-ok response: {:?}", response),
+        (ResponseCode::Ok, _) => log::info!("Got ping response!"),
+        response => log::error!("Got non-ok response: {:?}", response),
     }
 
     Ok(())
@@ -84,8 +85,19 @@ fn ping() -> Result<(), CliError> {
 
 fn set_led_brightness(brightness: u8) -> Result<(), CliError> {
     match send_message(&Message::SetLedBrightness(brightness))? {
-        ResponseCode::Ok => log::info!("LED brightness changed to: {}", brightness),
-        response => log::info!("Got non-ok response: {:?}", response),
+        (ResponseCode::Ok, _) => log::info!("LED brightness changed to: {}", brightness),
+        response => log::error!("Got non-ok response: {:?}", response),
+    }
+
+    Ok(())
+}
+
+fn get_led_brightness() -> Result<(), CliError> {
+    match send_message(&Message::GetLedBrightness)? {
+        (ResponseCode::Ok, ResponsePayload::LedBrightness(brightness)) => {
+            log::info!("Current LED brightness is: {}", brightness);
+        }
+        (response, _) => log::error!("Got non-ok response: {:?}", response),
     }
 
     Ok(())
@@ -144,6 +156,10 @@ fn main() {
                 .unwrap();
             log::info!("Setting LED brightness to: {}", brightness);
             set_led_brightness(brightness).expect("Failed to set LED brightness");
+        }
+        ("get_led_brightness", Some(_sub_matches)) => {
+            log::info!("Getting LED brightness");
+            get_led_brightness().expect("Failed to get LED brightness");
         }
         (unknown, _) => {
             if unknown.is_empty() {

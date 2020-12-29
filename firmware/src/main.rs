@@ -7,7 +7,7 @@ pub mod hid;
 use apa102_spi::{Apa102, PixelOrder};
 use embedded_hal::serial::{Read, Write};
 use encoder::RotaryEncoder;
-use micropad_protocol::{Message, MessageFrame, ResponseCode};
+use micropad_protocol::{Message, MessageFrame, ResponseCode, ResponsePayload};
 use smart_leds::{gamma, SmartLedsWrite};
 use smart_leds_trait::RGB8;
 
@@ -374,15 +374,25 @@ where
 fn write_response<W>(
     frame: &mut MessageFrame,
     writer: &mut W,
-    response: ResponseCode,
+    code: ResponseCode,
 ) -> nb::Result<(), W::Error>
 where
     W: Write<u8>,
 {
-    frame.buf[0] = response.code();
-    for i in 1..4 {
-        frame.buf[i] = 0x0; // Zero pad to the frame boundary
-    }
+    write_response_payload(frame, writer, code, &ResponsePayload::None)
+}
+
+fn write_response_payload<W>(
+    frame: &mut MessageFrame,
+    writer: &mut W,
+    code: ResponseCode,
+    payload: &ResponsePayload,
+) -> nb::Result<(), W::Error>
+where
+    W: Write<u8>,
+{
+    frame.buf[0] = code.raw();
+    payload.fill(frame);
 
     for i in 0..4 {
         writer.write(frame.buf[i])?;
@@ -412,6 +422,15 @@ fn poll_usb() {
                             .borrow_mut()
                             .set_led_brightness(brightness);
                         let _ = write_response(&mut message_frame, serial, ResponseCode::Ok);
+                    }
+                    Message::GetLedBrightness => {
+                        let brightness = CONTROL_STATE.borrow(cs).borrow().get_led_brightness();
+                        let _ = write_response_payload(
+                            &mut message_frame,
+                            serial,
+                            ResponseCode::Ok,
+                            &ResponsePayload::LedBrightness(brightness),
+                        );
                     }
                     _ => {
                         let _ = write_response(
