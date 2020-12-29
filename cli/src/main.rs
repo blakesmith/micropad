@@ -103,6 +103,29 @@ fn get_led_brightness() -> Result<(), CliError> {
     Ok(())
 }
 
+fn get_version() -> Result<(), CliError> {
+    match send_message(&Message::GetVersion)? {
+        (
+            ResponseCode::Ok,
+            ResponsePayload::Version {
+                major,
+                minor,
+                patch,
+            },
+        ) => {
+            log::info!(
+                "Current firmware version is is: {}.{}.{}",
+                major,
+                minor,
+                patch
+            );
+        }
+        (response, _) => log::error!("Got non-ok response: {:?}", response),
+    }
+
+    Ok(())
+}
+
 fn get_mode_info() -> Result<(), CliError> {
     match send_message(&Message::GetModeInfo)? {
         (
@@ -147,6 +170,13 @@ fn main() {
                         .help("The LED brightness, 0 - 255"),
                 ),
         )
+        .subcommand(
+            SubCommand::with_name("get_led_brightness").about("Get the current LED brightness"),
+        )
+        .subcommand(
+            SubCommand::with_name("get_mode_info").about("Get the current mode information"),
+        )
+        .subcommand(SubCommand::with_name("get_version").about("Get the current firmware version"))
         .get_matches();
 
     if matches.is_present("debug") {
@@ -184,6 +214,10 @@ fn main() {
         ("get_mode_info", Some(_sub_matches)) => {
             log::info!("Getting mode info");
             get_mode_info().expect("Failed to get mode info");
+        }
+        ("get_version", Some(_sub_matches)) => {
+            log::info!("Getting the current version");
+            get_version().expect("Failed to get firmware version");
         }
         (unknown, _) => {
             if unknown.is_empty() {

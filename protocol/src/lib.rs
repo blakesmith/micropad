@@ -2,6 +2,7 @@
 
 pub enum Message {
     Ping,
+    GetVersion,
     SetLedBrightness(u8),
     GetLedBrightness,
     GetModeInfo,
@@ -12,9 +13,10 @@ impl Message {
     fn code(&self) -> u8 {
         match self {
             Message::Ping => 0x01,
-            Message::SetLedBrightness(_) => 0x02,
-            Message::GetLedBrightness => 0x03,
-            Message::GetModeInfo => 0x04,
+            Message::GetVersion => 0x02,
+            Message::SetLedBrightness(_) => 0x03,
+            Message::GetLedBrightness => 0x04,
+            Message::GetModeInfo => 0x05,
             Message::Unknown => 0xFF,
         }
     }
@@ -53,6 +55,11 @@ pub enum ResponsePayload {
         user_mode_count: u8,
         current_mode_index: u8,
     },
+    Version {
+        major: u8,
+        minor: u8,
+        patch: u8,
+    },
 }
 
 impl ResponsePayload {
@@ -81,6 +88,18 @@ impl ResponsePayload {
                     frame.buf[i] = 0x00;
                 }
             }
+            ResponsePayload::Version {
+                major,
+                minor,
+                patch,
+            } => {
+                frame.buf[1] = *major;
+                frame.buf[2] = *minor;
+                frame.buf[3] = *patch;
+                for i in 4..frame.frame_size() {
+                    frame.buf[i] = 0x00;
+                }
+            }
         }
     }
 
@@ -94,6 +113,11 @@ impl ResponsePayload {
                 built_in_mode_count: response_frame.buf[1],
                 user_mode_count: response_frame.buf[2],
                 current_mode_index: response_frame.buf[3],
+            },
+            Message::GetVersion => ResponsePayload::Version {
+                major: response_frame.buf[1],
+                minor: response_frame.buf[2],
+                patch: response_frame.buf[3],
             },
         }
     }
@@ -125,9 +149,10 @@ impl From<&MessageFrame> for Message {
     fn from(frame: &MessageFrame) -> Message {
         match frame.buf[0] {
             0x01 => Message::Ping,
-            0x02 => Message::SetLedBrightness(frame.buf[1]),
-            0x03 => Message::GetLedBrightness,
-            0x04 => Message::GetModeInfo,
+            0x02 => Message::GetVersion,
+            0x03 => Message::SetLedBrightness(frame.buf[1]),
+            0x04 => Message::GetLedBrightness,
+            0x05 => Message::GetModeInfo,
             _ => Message::Unknown,
         }
     }
@@ -137,7 +162,10 @@ impl From<&Message> for MessageFrame {
     fn from(message: &Message) -> Self {
         let mut message_frame = MessageFrame::new();
         match message {
-            Message::Ping | Message::GetLedBrightness | Message::GetModeInfo => {
+            Message::Ping
+            | Message::GetLedBrightness
+            | Message::GetModeInfo
+            | Message::GetVersion => {
                 message_frame.buf[0] = message.code();
                 for i in 1..message_frame.frame_size() {
                     message_frame.buf[i] = 0x00;

@@ -38,6 +38,10 @@ use cortex_m_rt::entry;
 
 use crate::hid::{Key, KeyboardHidClass, MediaCode, ScanCode};
 
+const MAJOR_VERSION: u8 = 0;
+const MINOR_VERSION: u8 = 1;
+const PATCH_VERSION: u8 = 0;
+
 static mut USB_BUS_ALLOC: Option<UsbBusAllocator<UsbBus<hal::usb::Peripheral>>> = None;
 static USB_DEV: Mutex<RefCell<Option<UsbDevice<UsbBus<hal::usb::Peripheral>>>>> =
     Mutex::new(RefCell::new(None));
@@ -446,6 +450,18 @@ fn poll_usb() {
                                 built_in_mode_count: MODES.len() as u8,
                                 user_mode_count: 0,
                                 current_mode_index: current_mode,
+                            },
+                        );
+                    }
+                    Message::GetVersion => {
+                        let _ = write_response_payload(
+                            &mut message_frame,
+                            serial,
+                            ResponseCode::Ok,
+                            &ResponsePayload::Version {
+                                major: MAJOR_VERSION,
+                                minor: MINOR_VERSION,
+                                patch: PATCH_VERSION,
                             },
                         );
                     }

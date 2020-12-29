@@ -34,7 +34,18 @@ error value.
 
 - 0: Success
 
-### 0x02 - Set LED pulse brightness
+### 0x02 - Get Version
+
+*Description*: Get the current firmware version
+*Arguments*: No arguments.
+*Valid responses*
+
+- 0: Success, with follow on response bytes.
+  - Byte 2: Major version. 0x00 - 0xFF.
+  - Byte 3: Minor version. 0x00 - 0xFF.
+  - Byte 4: Patch version. 0x00 - 0xFF.
+
+### 0x03 - Set LED pulse brightness
 
 *Description*: Set the LED pulse brightness when keys are pressed
 *Arguments*: 1 byte brightness level.
@@ -45,7 +56,7 @@ error value.
 
 - 0: Success
 
-### 0x03 - Get the LED pulse brightness
+### 0x04 - Get the LED pulse brightness
 
 *Description*: Retrieve the LED pulse brightness when the keys are pressed.
 *Arguments*: No arguments.
@@ -55,7 +66,7 @@ error value.
 - 0: Success, with follow on response bytes.
   - Byte 2: The current brightness level. 0x00 - 0xFF.
 
-### 0x04 - Get current mode information
+### 0x05 - Get current mode information
 
 *Description*: Retrieve information about the mode.
 *Arguments*: No arguments.
