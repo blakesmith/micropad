@@ -67,10 +67,10 @@ fn send_message(message: &Message) -> Result<(ResponseCode, ResponsePayload), Cl
     let mut micropad_port = connect_micropad(&micropad_info)?;
 
     let request_frame = MessageFrame::from(message);
-    micropad_port.write(&request_frame.buf)?;
+    micropad_port.write_all(&request_frame.buf)?;
 
     let mut response_frame = MessageFrame::new();
-    micropad_port.read(&mut response_frame.buf)?;
+    micropad_port.read_exact(&mut response_frame.buf)?;
     Ok(response_frame.into_code_and_payload(message))
 }
 
