@@ -369,7 +369,7 @@ fn read_into_frame<R>(frame: &mut MessageFrame, reader: &mut R) -> nb::Result<()
 where
     R: Read<u8>,
 {
-    for i in 0..4 {
+    for i in 0..frame.frame_size() {
         match reader.read() {
             Ok(b) => frame.buf[i] = b,
             Err(err) => return Err(err),
@@ -402,7 +402,7 @@ where
     frame.buf[0] = code.raw();
     payload.fill(frame);
 
-    for i in 0..4 {
+    for i in 0..frame.frame_size() {
         writer.write(frame.buf[i])?;
     }
     Ok(())
