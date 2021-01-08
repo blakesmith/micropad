@@ -30,5 +30,6 @@
 ** DONE Double check mounting hole alignment
 * DONE DFU firmware update prototype
 * DONE Multiple modes
-* TODO Order rev. 2 of case and top plate
+* DONE Order rev. 2 of case and top plate
+* DONE Order keycaps
 * TODO Easy, in the field DFU updates?

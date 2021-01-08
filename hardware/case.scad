@@ -56,8 +56,8 @@ mounting_hole_radius = 1.5 + 0.4;
 mounting_hole_head_radius = mounting_hole_radius + 0.8;
 mounting_hole_head_height = 1.72;
 
-mounting_hole_x_offset = 65.58 / 2; // Measured from the PCB directly
-mounting_hole_y_offset = 36.83 / 2; // Measured form the PCB directly
+mounting_hole_x_offset = 69.87 / 2; // Measured from the PCB directly
+mounting_hole_y_offset = 38.33 / 2; // Measured form the PCB directly
 
 pcb_width = 76.4;
 pcb_length = 45.13;
@@ -110,8 +110,8 @@ KEYCAP_COLORS = [
 ];
 
 union() {
-    pcb();
-    top_plate(top_plate_height);
+//    pcb();
+//    top_plate(top_plate_height);
     case();
 //    plate(top_plate_length, top_plate_width, top_plate_corner_radius);
 }
@@ -172,7 +172,7 @@ module case() {
         }
     }
 
-    %difference() {
+    difference() {
         //color("cyan")
             hull() {
                 cube([case_length, case_width, case_height], center=true);
@@ -193,8 +193,8 @@ module case() {
             }
         }
     }
-    standoffs();
-    encoder();
+//    standoffs();
+//    encoder();
 }
 
 module encoder() {
