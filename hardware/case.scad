@@ -50,14 +50,14 @@ apa102_width = 5;
 
 usb_width = 9;
 usb_length = 10.1;
-usb_height = 2.56;
+usb_height = 4.56;
 
 mounting_hole_radius = 1.5 + 0.4;
 mounting_hole_head_radius = mounting_hole_radius + 0.8;
 mounting_hole_head_height = 1.72;
 
-mounting_hole_x_offset = 69.87 / 2; // Measured from the PCB directly
-mounting_hole_y_offset = 38.33 / 2; // Measured form the PCB directly
+mounting_hole_x_offset = 67.87 / 2; // Measured from the PCB directly
+mounting_hole_y_offset = 36.33 / 2; // Measured form the PCB directly
 
 pcb_width = 76.4;
 pcb_length = 45.13;
@@ -70,9 +70,9 @@ plate_standoff_radius = 2;
 plate_standoff_height = 5;
 
 case_chamfer_size = 2;
-case_wall_thickness = 3;
+case_wall_thickness = 2;
 case_length = pcb_length + 1.5;
-case_width = pcb_width + 2.2;
+case_width = pcb_width + 5.2;
 
 case_height = standoff_height + pcb_height + top_plate_height + (case_wall_thickness / 2) + plate_standoff_height - (case_chamfer_size / 2) + 5;
 
