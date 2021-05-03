@@ -1,3 +1,4 @@
 (sym_lib_table
   (lib (name apa102)(type Legacy)(uri ${KIPRJMOD}/apa102.lib)(options "")(descr ""))
+  (lib (name micropad-rescue)(type Legacy)(uri ${KIPRJMOD}/micropad-rescue.lib)(options "")(descr ""))
 )

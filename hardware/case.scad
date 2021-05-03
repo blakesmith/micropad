@@ -74,7 +74,7 @@ case_wall_thickness = 3;
 case_length = pcb_length + 1.5;
 case_width = pcb_width + 2.2;
 
-case_height = standoff_height + pcb_height + top_plate_height + (case_wall_thickness / 2) + plate_standoff_height - (case_chamfer_size / 2);
+case_height = standoff_height + pcb_height + top_plate_height + (case_wall_thickness / 2) + plate_standoff_height - (case_chamfer_size / 2) + 5;
 
 echo("Case height is: ", case_height);
 
@@ -164,7 +164,7 @@ module case() {
 
     module usb_case_cutout() {
         height = usb_height + 1;
-        translate([0, -(top_plate_width / 2) - 5, pcb_offset_z + (height / 2) + pcb_height]) {
+        translate([0, -(top_plate_width / 2) - 5, pcb_offset_z + (height / 2) + pcb_height + 2]) {
             hull() {
                 cube([usb_length, usb_width, height], center=true);
                 3d_rounded_corners(usb_length, usb_width, height, corner_radius=1);
