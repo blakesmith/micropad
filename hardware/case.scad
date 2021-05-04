@@ -163,8 +163,8 @@ module case() {
     }
 
     module usb_case_cutout() {
-        height = usb_height + 1;
-        translate([0, -(top_plate_width / 2) - 5, pcb_offset_z + (height / 2) + (pcb_height + 3)]) {
+        height = usb_height + 1.5;
+        translate([0, -(top_plate_width / 2) - 5, pcb_offset_z + (height / 2) + (pcb_height + 1.2)]) {
             hull() {
                 cube([usb_length, usb_width, height], center=true);
                 3d_rounded_corners(usb_length, usb_width, height, corner_radius=1);
